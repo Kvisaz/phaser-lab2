@@ -1,7 +1,7 @@
 #  Phaser Games Laboratory
 
-- [Online Storybook Demo](https://kvisaz.github.io/phaser-webpack-template/storybook/index.html)
-- [GitHub](https://github.com/Kvisaz/phaser-webpack-template)
+- [GitHub](https://github.com/Kvisaz/phaser-lab2)
+- [Online Storybook Demo](https://kvisaz.github.io/phaser-lab2/storybook/index.html)
 
 
 ## Optimized Phaser Webpack Template

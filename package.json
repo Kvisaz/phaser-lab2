@@ -14,7 +14,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Simple Webpack template for Phaser",
+  "description": "Phaser Games components",
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/node": "^22.1.0",
