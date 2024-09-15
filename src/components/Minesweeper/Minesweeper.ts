@@ -215,6 +215,7 @@ export class Cell extends Phaser.GameObjects.Container {
     private text: Phaser.GameObjects.Text;
     private onClick: (cell: Cell) => void;
     private onRightClick: (cell: Cell) => void;
+    private pressTimer: NodeJS.Timeout | null = null;
 
     constructor({
                     scene,
@@ -235,16 +236,28 @@ export class Cell extends Phaser.GameObjects.Container {
 
         // Фон ячейки
         this.bg = scene.add
-            .image(0, 0,  AssetImages.cell.textureName, AssetImages.cell.frameIndex)
-            .setDisplaySize(size, size)
-            .setInteractive()
-            .on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-                if (pointer.rightButtonDown()) {
-                    this.onRightClick(this);
-                } else {
-                    this.onClick(this);
-                }
-            });
+          .image(0, 0, AssetImages.cell.textureName, AssetImages.cell.frameIndex)
+          .setDisplaySize(size, size)
+          .setInteractive()
+          .on("pointerdown", () => {
+              this.pressTimer = setTimeout(() => {
+                  this.onRightClick(this);
+                  this.pressTimer = null;
+              }, 500); // 500 мс для долгого нажатия
+          })
+          .on("pointerup", () => {
+              if (this.pressTimer) {
+                  clearTimeout(this.pressTimer);
+                  this.pressTimer = null;
+                  this.onClick(this);
+              }
+          })
+          .on("pointerout", () => {
+              if (this.pressTimer) {
+                  clearTimeout(this.pressTimer);
+                  this.pressTimer = null;
+              }
+          });
 
         // Текст для отображения числа соседних мин
         this.text = scene.add.text(0, 0, '', {
