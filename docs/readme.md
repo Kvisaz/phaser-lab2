@@ -4,4 +4,4 @@
 - [Online Storybook Demo](https://kvisaz.github.io/phaser-lab2/storybook/index.html)
 
 
-1. [Minesweeper](src/components/Minesweeper/readme.md)
+1. Minesweeper
