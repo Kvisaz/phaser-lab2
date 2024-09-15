@@ -10,6 +10,10 @@ interface IProps {
     onGameOver?: (isWin: boolean) => void; // Коллбэк при завершении игры
 }
 
+/** почти хорош, но  to do
+ * - как делать флаги?
+ * - первый клик должен быть всегда чистым, меняй мину если она попадется
+ **/
 export class Minesweeper extends Phaser.GameObjects.Container {
     private grid: Cell[][];
     private cellSize: number;
