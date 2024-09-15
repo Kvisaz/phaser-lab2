@@ -4,6 +4,9 @@
 - [Online Storybook Demo](https://kvisaz.github.io/phaser-lab2/storybook/index.html)
 
 
+1. [Minesweeper](src/components/Minesweeper/readme.md)
+
+
 ## Optimized Phaser Webpack Template
 
 Just copy and use with `npm run start`, `npm run build`
