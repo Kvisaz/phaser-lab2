@@ -3,6 +3,7 @@
 Я пишу компоненты для игр на Phaser 3.80 на TypeScript в таком стиле
 
 ```typescript
+
 interface IProps {
   scene: Phaser.Scene;
   text: string;
@@ -18,6 +19,9 @@ export class TestButton extends Phaser.GameObjects.Container {
   }
 }
 ```
+
+Замечание по стилю
+- не надо импортировать "Phaser from 'phaser'" - это подключается и так статической библиотеко
 
 мой tsconfig выглядит так
 
