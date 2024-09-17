@@ -1,13 +1,14 @@
 interface IProps {
   scene: Phaser.Scene;
+  url: string;
   textureName: string;
   frameWidth: number;
   frameHeight: number;
 }
 
-export const loadSpriteSheet = async ({ scene, textureName, frameHeight, frameWidth }: IProps) => {
+export const loadSpriteSheet = async ({ scene, textureName, frameHeight, frameWidth, url }: IProps) => {
   return new Promise<void>((resolve) => {
-    scene.load.spritesheet(textureName, "./assets/atlases/minesweeper01.png", {
+    scene.load.spritesheet(textureName, url, {
       frameWidth,
       frameHeight
     });

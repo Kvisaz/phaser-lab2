@@ -1,29 +1,33 @@
 import { loadSpriteSheet } from "../../common";
 
+export const url = "./assets/atlases/minesweeper01.png";
 export const textureName = "minesweeper";
 
 export const loadMineSweeperAssets = async (scene: Phaser.Scene) => loadSpriteSheet({
-  scene, textureName, frameWidth: 128, frameHeight: 128
+  scene,
+  url,
+  textureName,
+  frameWidth: 128, frameHeight: 128
 })
 
-// AssetImages.ts
-
+let frameIndex = 0;
+/** Располагай спрайты в их порядке в листе! **/
 export const AssetImages = {
   cell: {
     textureName,
-    frameIndex: 0, // Индекс кадра для "cell"
+    frameIndex: frameIndex++
   },
   revealedCell: {
     textureName,
-    frameIndex: 1, // Индекс кадра для "revealedCell"
+    frameIndex: frameIndex++
   },
   flag: {
     textureName,
-    frameIndex: 2, // Индекс кадра для "flag"
+    frameIndex: frameIndex++
   },
   mine: {
     textureName,
-    frameIndex: 3, // Индекс кадра для "mine"
+    frameIndex: frameIndex++
   },
 };
 
