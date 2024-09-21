@@ -1,53 +1,23 @@
 import { StateMachine } from "../../common/lab/StateMachine";
+import { IMiniGamesProps, Machine, MiniGameState } from "./interfaces";
 
-export interface IMiniGamesProps {
-  scene: Phaser.Scene;
-}
-
-export enum MiniGameState {
-  Boot = "Boot",
-  StartMenu = "StartMenu",
-  Game = "Game",
-  GameOver = "GameOver"
-}
-
+/**
+ * Это каркас игры в которой будут меняться
+ * - boot: загружаемые ассеты
+ * - startMenu: фон, лого, название
+ * - game: игровой компонент + ui
+ *  - самый часто заменяемый компонент
+ * - gameOver: фон, лого, тексты
+ *
+ * - также возможно будет менять store как общее хранилище
+ **/
 export class MiniGame {
-
-  constructor(private scene: Phaser.Scene) {
-
-    let cyclesCount = 0;
-    const maxCount = 5;
-
+  constructor({ scene, game, gameOver, startMenu, boot }: IMiniGamesProps) {
     const stateMachine = new StateMachine<MiniGameState>()
-      .add(MiniGameState.Boot, (stateMachine) => {
-        console.log("boot");
-        setTimeout(() => {
-          stateMachine.go(MiniGameState.StartMenu);
-        }, 1500);
-      })
-      .add(MiniGameState.StartMenu, stateMachine => {
-        console.log("StartMenu", cyclesCount++);
-        setTimeout(() => {
-          stateMachine.go(MiniGameState.Game);
-        }, 1500);
-      })
-      .add(MiniGameState.Game, stateMachine => {
-        console.log("Game");
-        setTimeout(() => {
-          stateMachine.go(MiniGameState.GameOver);
-        }, 1500);
-      })
-      .add(MiniGameState.GameOver, stateMachine => {
-        console.log("GameOver");
-        if (cyclesCount >= maxCount) {
-          console.log("cycled over max", maxCount);
-          return;
-        }
-        setTimeout(() => {
-          stateMachine.go(MiniGameState.StartMenu);
-        }, 1500);
-      });
-
+      .add(MiniGameState.Boot, (sm) => boot(scene, sm))
+      .add(MiniGameState.StartMenu, (sm) => startMenu(scene, sm))
+      .add(MiniGameState.Game, (sm) => game(scene, sm))
+      .add(MiniGameState.GameOver, (sm) => gameOver(scene, sm))
     stateMachine.go(MiniGameState.Boot);
   }
 

@@ -1,15 +1,15 @@
 import { IStory } from "../../../storybook/interfaces";
-import { MiniGame } from "./MiniGame";
 import { delay } from "../../common";
+import { MiniGameMachine } from "./MiniGameMachine";
 import { MiniGameState } from "./interfaces";
 
-export const miniGameStory: IStory = {
+export const miniGameMachineStory: IStory = {
   title: "Mini Game Test",
   run: async (scene) => {
 
     let cycles = 0;
     const maxCycles = 3;
-    const game = new MiniGame({
+    const game = new MiniGameMachine({
       scene,
       boot: async (scene, router) => {
         console.log("boot!");
