@@ -1,1 +1,1 @@
-export * from './loadSpritesheet';
+export * from './loadAssets';
