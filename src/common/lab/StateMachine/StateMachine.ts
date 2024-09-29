@@ -7,6 +7,7 @@ export class StateMachine<State extends string, Data> {
   private states: Map<State, StateHandler<State, Data>> = new Map();
   private data: Data;
   private isDestroyed: boolean = false;
+  private _isStopped: boolean = false;
 
   constructor(initialData: Data) {
     this.data = initialData;
@@ -22,11 +23,12 @@ export class StateMachine<State extends string, Data> {
   }
 
   start(state: State): void {
+    this._isStopped = false;
     this.go(state);
   }
 
   go(state: State): void {
-    if (this.isDestroyed) return;
+    if (this.isDestroyed || this._isStopped) return;
     this.currentState = state;
     const handler = this.states.get(state);
     if (handler) {
@@ -57,14 +59,22 @@ export class StateMachine<State extends string, Data> {
     }
   }
 
+  stop(): void {
+    this._isStopped = true;
+  }
+
+  get isStopped(): boolean {
+    return this._isStopped;
+  }
+
   destroy(): void {
     if (this.isDestroyed) {
       return;
     }
     this.isDestroyed = true;
+    this._isStopped = true;
     this.currentState = null;
     this.states.clear();
     this.data = {} as Data;
   }
-
 }

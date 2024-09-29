@@ -292,3 +292,82 @@ describe('StateMachine with simplified destroy functionality', () => {
     }, 200);
   });
 });
+
+describe('StateMachine with stop functionality', () => {
+  type TestState = 'state1' | 'state2' | 'state3';
+  interface TestData {
+    count: number;
+  }
+
+  let sm: StateMachine<TestState, TestData>;
+
+  beforeEach(() => {
+    sm = new StateMachine<TestState, TestData>({ count: 0 });
+  });
+
+  test('stop должен предотвращать дальнейшие переходы', () => {
+    const mockHandler1 = jest.fn((sm: StateMachine<TestState, TestData>) => {
+      sm.setData({ count: sm.getData().count + 1 });
+    });
+    const mockHandler2 = jest.fn((sm: StateMachine<TestState, TestData>) => {
+      sm.setData({ count: sm.getData().count + 1 });
+    });
+    const mockHandler3 = jest.fn((sm: StateMachine<TestState, TestData>) => {
+      sm.setData({ count: sm.getData().count + 1 });
+    });
+
+    sm.add('state1', mockHandler1)
+      .add('state2', mockHandler2)
+      .add('state3', mockHandler3);
+
+    sm.start('state1');
+    sm.go('state2');
+    sm.stop();
+    sm.go('state3');
+
+    expect(sm.getCurrentState()).toBe('state2');
+    expect(mockHandler1).toHaveBeenCalledTimes(1);
+    expect(mockHandler2).toHaveBeenCalledTimes(1);
+    expect(mockHandler3).not.toHaveBeenCalled();
+    expect(sm.getData().count).toBe(2);
+  });
+
+  test('isStopped должен возвращать правильное значение', () => {
+    expect(sm.isStopped).toBe(false);
+    sm.stop();
+    expect(sm.isStopped).toBe(true);
+  });
+
+  test('start должен возобновлять работу после stop', () => {
+    const mockHandler = jest.fn((sm: StateMachine<TestState, TestData>) => {
+      sm.setData({ count: sm.getData().count + 1 });
+    });
+    sm.add('state1', mockHandler);
+
+    sm.start('state1');
+    expect(sm.getData().count).toBe(1);
+
+    sm.stop();
+    sm.go('state1');
+    expect(sm.getData().count).toBe(1);
+
+    sm.start('state1');
+    expect(sm.getData().count).toBe(2);
+  });
+
+  test('destroy должен также останавливать машину', () => {
+    sm.destroy();
+    expect(sm.isStopped).toBe(true);
+  });
+
+  test('stop не должен очищать текущее состояние или данные', () => {
+    sm.add('state1', (sm) => {
+      sm.setData({ count: 5 });
+    });
+    sm.start('state1');
+    sm.stop();
+
+    expect(sm.getCurrentState()).toBe('state1');
+    expect(sm.getData()).toEqual({ count: 5 });
+  });
+});
