@@ -11,25 +11,29 @@ export const miniGameStory: IStory = {
     const maxCycles = 3;
     const game = new MiniGame({
       scene,
+      initialData: { pHP: 100 },
       boot: async (scene, router) => {
-        console.log("boot!");
+        console.log("boot!", router.getData());
         await delay(1000);
         router.go(MiniGameState.StartMenu);
       },
       startMenu: async (scene, router) => {
-        console.log("startMenu!", cycles++);
+        router.setData({ pHP: 100 });
+        console.log("startMenu!", cycles++, router.getData());
         await delay(1000);
         router.go(MiniGameState.Game);
 
       },
       game: async (scene, router) => {
-        console.log("game!");
+        router.setData(prev => ({...prev, pHP: prev.pHP - 1 }));
+        console.log("game", router.getData());
         await delay(1000);
         router.go(MiniGameState.GameOver);
 
       },
       gameOver: async (scene, router) => {
-        console.log("gameOver!");
+        router.setData(prev => ({...prev, pHP: prev.pHP - 50 }));
+        console.log("gameOver!", router.getData());
         await delay(1000);
         if (cycles >= maxCycles) console.log("cycles over", maxCycles);
         else router.go(MiniGameState.StartMenu);

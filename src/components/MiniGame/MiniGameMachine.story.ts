@@ -11,19 +11,25 @@ export const miniGameMachineStory: IStory = {
     const maxCycles = 3;
     const game = new MiniGameMachine({
       scene,
+      initialData: { playerGold: 2 },
       boot: async (scene, router) => {
         console.log("boot!");
         await delay(1000);
+        router.setData({ playerGold: 3 });
         router.go(MiniGameState.StartMenu);
       },
       startMenu: async (scene, router) => {
         console.log("startMenu!", cycles++);
+        router.setData(prevData => ({ playerGold: prevData.playerGold + 100 }));
+        console.log("game data", router.getData());
         await delay(1000);
         router.go(MiniGameState.Game);
 
       },
       game: async (scene, router) => {
         console.log("game!");
+        router.setData(prevData => ({ playerGold: prevData.playerGold - 50 }));
+        console.log("game data", router.getData());
         await delay(1000);
         router.go(MiniGameState.GameOver);
 
@@ -31,6 +37,8 @@ export const miniGameMachineStory: IStory = {
       gameOver: async (scene, router) => {
         console.log("gameOver!");
         await delay(1000);
+        router.setData(prevData => ({ playerGold: 0 }));
+        console.log("game data", router.getData());
         if (cycles >= maxCycles) console.log("cycles over", maxCycles);
         else router.go(MiniGameState.StartMenu);
       }

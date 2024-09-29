@@ -1,18 +1,20 @@
-// StateMachine.test.ts
-
 import { StateMachine } from './StateMachine';
 
-describe('StateMachine with Typing', () => {
+describe('StateMachine with Typing and Data Storage', () => {
   type TestState = 'state1' | 'state2' | 'state3' | 'unknownState';
+  interface TestData {
+    count: number;
+    message: string;
+  }
 
-  let sm: StateMachine<TestState>;
+  let sm: StateMachine<TestState, TestData>;
 
   beforeEach(() => {
-    sm = new StateMachine<TestState>();
+    sm = new StateMachine<TestState, TestData>({ count: 0, message: '' });
   });
 
   test('Должен добавлять состояния и переходить между ними', () => {
-    const mockHandler1 = jest.fn((sm: StateMachine<TestState>) => {
+    const mockHandler1 = jest.fn((sm: StateMachine<TestState, TestData>) => {
       sm.go('state2');
     });
     const mockHandler2 = jest.fn();
@@ -28,10 +30,10 @@ describe('StateMachine with Typing', () => {
   });
 
   test('Должен корректно обрабатывать последовательные переходы между несколькими состояниями', () => {
-    const mockHandler1 = jest.fn((sm: StateMachine<TestState>) => {
+    const mockHandler1 = jest.fn((sm: StateMachine<TestState, TestData>) => {
       sm.go('state2');
     });
-    const mockHandler2 = jest.fn((sm: StateMachine<TestState>) => {
+    const mockHandler2 = jest.fn((sm: StateMachine<TestState, TestData>) => {
       sm.go('state3');
     });
     const mockHandler3 = jest.fn();
@@ -50,24 +52,25 @@ describe('StateMachine with Typing', () => {
 
   test('Должен корректно обрабатывать циклические переходы между состояниями', () => {
     const maxTransitions = 5;
-    let transitionCount = 0;
 
     sm.add('state1', (sm) => {
-      transitionCount++;
-      if (transitionCount < maxTransitions) {
+      const data = sm.getData();
+      if (data.count < maxTransitions) {
+        sm.setData({ count: data.count + 1, message: data.message });
         sm.go('state2');
       }
     })
       .add('state2', (sm) => {
-        transitionCount++;
-        if (transitionCount < maxTransitions) {
+        const data = sm.getData();
+        if (data.count < maxTransitions) {
+          sm.setData({ count: data.count + 1, message: data.message });
           sm.go('state1');
         }
       });
 
     sm.start('state1');
 
-    expect(transitionCount).toBeLessThanOrEqual(maxTransitions);
+    expect(sm.getData().count).toBe(maxTransitions);
     expect(['state1', 'state2']).toContain(sm.getCurrentState());
   });
 
@@ -178,5 +181,43 @@ describe('StateMachine with Typing', () => {
     const returnValue = sm.add('state1', () => {});
 
     expect(returnValue).toBe(sm);
+  });
+
+  test('Должен корректно инициализировать и обновлять данные', () => {
+    sm.add('state1', (sm) => {
+      const data = sm.getData();
+      sm.setData({ count: data.count + 1, message: 'Updated in state1' });
+    });
+
+    sm.start('state1');
+
+    expect(sm.getData()).toEqual({ count: 1, message: 'Updated in state1' });
+  });
+
+  test('Должен сохранять данные между переходами состояний', () => {
+    sm.add('state1', (sm) => {
+      const data = sm.getData();
+      sm.setData({ count: data.count + 1, message: 'Updated in state1' });
+      sm.go('state2');
+    })
+      .add('state2', (sm) => {
+        const data = sm.getData();
+        sm.setData({ count: data.count + 1, message: data.message + ', Updated in state2' });
+      });
+
+    sm.start('state1');
+
+    expect(sm.getData()).toEqual({ count: 2, message: 'Updated in state1, Updated in state2' });
+  });
+
+  test('setData должен обновлять данные с помощью объекта', () => {
+    sm.setData({ count: 5, message: 'Updated with object' });
+    expect(sm.getData()).toEqual({ count: 5, message: 'Updated with object' });
+  });
+
+  test('setData должен обновлять данные с помощью функции', () => {
+    sm.setData({ count: 3, message: 'Initial' });
+    sm.setData(prevData => ({ count: prevData.count + 2, message: `Count is now ${prevData.count + 2}` }));
+    expect(sm.getData()).toEqual({ count: 5, message: 'Count is now 5' });
   });
 });

@@ -1,5 +1,5 @@
 import { StateMachine } from "../../common/lab/StateMachine";
-import { IMiniGamesProps, Machine, MiniGameState } from "./interfaces";
+import { IMiniGamesProps, MiniGameState } from "./interfaces";
 
 /**
  * Это каркас игры в которой будут меняться
@@ -9,11 +9,11 @@ import { IMiniGamesProps, Machine, MiniGameState } from "./interfaces";
  *  - самый часто заменяемый компонент
  * - gameOver: фон, лого, тексты
  *
- * - также возможно будет менять store как общее хранилище
+ * - общий store - задается initialData
  **/
-export class MiniGame {
-  constructor({ scene, game, gameOver, startMenu, boot }: IMiniGamesProps) {
-    const stateMachine = new StateMachine<MiniGameState>()
+export class MiniGame<T> {
+  constructor({ scene, initialData, game, gameOver, startMenu, boot }: IMiniGamesProps<T>) {
+    const stateMachine = new StateMachine<MiniGameState, T>(initialData)
       .add(MiniGameState.Boot, (sm) => boot(scene, sm))
       .add(MiniGameState.StartMenu, (sm) => startMenu(scene, sm))
       .add(MiniGameState.Game, (sm) => game(scene, sm))

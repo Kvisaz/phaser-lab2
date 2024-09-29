@@ -1,12 +1,17 @@
-type StateHandler<State extends string> = (stateMachine: StateMachine<State>) => void;
+type StateHandler<State extends string, Data> = (
+  stateMachine: StateMachine<State, Data>
+) => void;
 
-export class StateMachine<State extends string> {
+export class StateMachine<State extends string, Data> {
   private currentState: State | null = null;
-  private states: Map<State, StateHandler<State>> = new Map();
+  private states: Map<State, StateHandler<State, Data>> = new Map();
+  private data: Data;
 
-  constructor() {}
+  constructor(initialData: Data) {
+    this.data = initialData;
+  }
 
-  add(state: State, handler: StateHandler<State>): this {
+  add(state: State, handler: StateHandler<State, Data>): this {
     this.states.set(state, handler);
     return this;
   }
@@ -28,4 +33,18 @@ export class StateMachine<State extends string> {
   getCurrentState(): State | null {
     return this.currentState;
   }
+
+  getData(): Data {
+    return this.data;
+  }
+
+  setData(newData: Partial<Data> | ((prevData: Data) => Partial<Data>)): void {
+    if (typeof newData === 'function') {
+      const updater = newData as (prevData: Data) => Partial<Data>;
+      this.data = { ...this.data, ...updater(this.data) };
+    } else {
+      this.data = { ...this.data, ...newData };
+    }
+  }
+
 }

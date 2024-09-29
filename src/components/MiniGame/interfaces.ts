@@ -7,12 +7,13 @@ export enum MiniGameState {
   GameOver = "GameOver"
 }
 
-export type Machine = StateMachine<MiniGameState>;
+export type Machine<State> = StateMachine<MiniGameState, State>;
 
-export interface IMiniGamesProps {
+export interface IMiniGamesProps<State> {
   scene: Phaser.Scene;
-  boot: (scene: Phaser.Scene, router: Machine) => Promise<void>;
-  startMenu: (scene: Phaser.Scene, router: Machine) => Promise<void>;
-  game: (scene: Phaser.Scene, router: Machine) => Promise<void>;
-  gameOver: (scene: Phaser.Scene, router: Machine) => Promise<void>;
+  initialData: State;
+  boot: (scene: Phaser.Scene, router: Machine<State>) => Promise<void>;
+  startMenu: (scene: Phaser.Scene, router: Machine<State>) => Promise<void>;
+  game: (scene: Phaser.Scene, router: Machine<State>) => Promise<void>;
+  gameOver: (scene: Phaser.Scene, router: Machine<State>) => Promise<void>;
 }
