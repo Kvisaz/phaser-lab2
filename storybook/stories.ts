@@ -5,9 +5,12 @@ import { match3Story } from "../src/components/Match3/Match3.story";
 import { miniGameStory, miniGameMachineStory } from "../src/components/MiniGame";
 import { bubbleShooterStory } from "../src/components/BubbleShooter";
 import { bubbleShooterClaudeStory } from "../src/components/BubbleShooterClaude";
+import { mineSweeperGameStory } from "../src/games";
 
 export const stories: IStoryListItem[] = Array.from(
   new Set<IStoryListItem>([
+    storyTitle("Mini Games"),
+    mineSweeperGameStory,
     storyTitle("Mini Game Machines"),
     miniGameStory,
     miniGameMachineStory,
