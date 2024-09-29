@@ -221,3 +221,74 @@ describe('StateMachine with Typing and Data Storage', () => {
     expect(sm.getData()).toEqual({ count: 5, message: 'Count is now 5' });
   });
 });
+
+
+describe('StateMachine with simplified destroy functionality', () => {
+  type TestState = 'state1' | 'state2';
+  interface TestData extends Record<string, unknown> {
+    count: number;
+  }
+
+  let sm: StateMachine<TestState, TestData>;
+
+  beforeEach(() => {
+    sm = new StateMachine<TestState, TestData>({ count: 0 });
+  });
+
+  test('destroy должен очищать состояние и данные', () => {
+    sm.add('state1', () => {});
+    sm.start('state1');
+    sm.setData({ count: 5 });
+
+    sm.destroy();
+
+    expect(sm.getCurrentState()).toBeNull();
+    expect(sm.getData()).toEqual({});
+  });
+
+  test('методы не должны работать после destroy', () => {
+    console.warn = jest.fn();
+
+    sm.destroy();
+
+    sm.add('state1', () => {});
+    sm.start('state1');
+    sm.go('state1');
+    sm.setData({ count: 5 });
+
+    expect(console.warn).toHaveBeenCalledTimes(4);
+    expect(sm.getCurrentState()).toBeNull();
+    expect(sm.getData()).toEqual({});
+  });
+
+  test('обработчики состояний не должны выполняться после destroy', () => {
+    const mockHandler = jest.fn();
+    sm.add('state1', mockHandler);
+    sm.start('state1');
+
+    sm.destroy();
+
+    sm.go('state1');
+
+    expect(mockHandler).toHaveBeenCalledTimes(1); // вызван при start, но не при go после destroy
+  });
+
+  test('асинхронные операции в обработчиках должны игнорироваться после destroy', (done) => {
+    const mockAsyncHandler = jest.fn(() => {
+      setTimeout(() => {
+        sm.go('state2');
+      }, 100);
+    });
+
+    sm.add('state1', mockAsyncHandler);
+    sm.add('state2', () => {});
+    sm.start('state1');
+
+    sm.destroy();
+
+    setTimeout(() => {
+      expect(sm.getCurrentState()).toBeNull();
+      done();
+    }, 200);
+  });
+});

@@ -22,19 +22,18 @@ export const miniGameStory: IStory = {
         console.log("startMenu!", cycles++, router.getData());
         await delay(1000);
         router.go(MiniGameState.Game);
-
       },
       game: async (scene, router) => {
         router.setData(prev => ({...prev, pHP: prev.pHP - 1 }));
         console.log("game", router.getData());
         await delay(1000);
         router.go(MiniGameState.GameOver);
-
       },
       gameOver: async (scene, router) => {
         router.setData(prev => ({...prev, pHP: prev.pHP - 50 }));
         console.log("gameOver!", router.getData());
         await delay(1000);
+        router.destroy();
         if (cycles >= maxCycles) console.log("cycles over", maxCycles);
         else router.go(MiniGameState.StartMenu);
       }

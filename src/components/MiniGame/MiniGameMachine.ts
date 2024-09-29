@@ -19,7 +19,7 @@ export class MiniGameMachine<T> {
   }
 
   destroy() {
-    console.log("miniGame destroyed");
+    this.stateMachine.destroy();
   }
 
   // Метод для получения текущих данных игры

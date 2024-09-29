@@ -12,16 +12,17 @@ import { IMiniGamesProps, MiniGameState } from "./interfaces";
  * - общий store - задается initialData
  **/
 export class MiniGame<T> {
+  private stateMachine: StateMachine<MiniGameState, T>;
   constructor({ scene, initialData, game, gameOver, startMenu, boot }: IMiniGamesProps<T>) {
-    const stateMachine = new StateMachine<MiniGameState, T>(initialData)
+    this.stateMachine = new StateMachine<MiniGameState, T>(initialData)
       .add(MiniGameState.Boot, (sm) => boot(scene, sm))
       .add(MiniGameState.StartMenu, (sm) => startMenu(scene, sm))
       .add(MiniGameState.Game, (sm) => game(scene, sm))
       .add(MiniGameState.GameOver, (sm) => gameOver(scene, sm))
-    stateMachine.go(MiniGameState.Boot);
+    this.stateMachine.go(MiniGameState.Boot);
   }
 
   destroy() {
-    console.log("miniGame destroyed");
+    this.stateMachine.destroy();
   }
 }
