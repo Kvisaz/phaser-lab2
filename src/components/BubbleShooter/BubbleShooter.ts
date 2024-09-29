@@ -9,6 +9,7 @@ interface IProps {
   gridRows?: number;
   gridCols?: number;
   bubbleTypesCount?: number;
+  bubbleSize?: number; // Добавлен
 }
 
 export class BubbleShooter extends Phaser.GameObjects.Container {
@@ -20,6 +21,8 @@ export class BubbleShooter extends Phaser.GameObjects.Container {
   private launcher: Phaser.GameObjects.Sprite;
   private currentBubbleType: number;
   private unSubs: Function[] = [];
+  private bubbleSize: number;
+  private bubbleGroup: Phaser.Physics.Arcade.StaticGroup;
 
   constructor(private props: IProps) {
     super(props.scene);
@@ -29,6 +32,10 @@ export class BubbleShooter extends Phaser.GameObjects.Container {
     this.gridRows = props.gridRows ?? 10;
     this.gridCols = props.gridCols ?? 8;
     this.bubbleTypesCount = props.bubbleTypesCount ?? 5;
+    this.bubbleSize = props.bubbleSize ?? 32; // Значение по умолчанию 32
+    this.bubbleGroup = scene.physics.add.staticGroup();
+
+    this.props.scene.physics.world.setBoundsCollision(true, true, false, false);
 
     if (isLogging) console.log('BubbleShooter props:', props);
 
@@ -46,15 +53,20 @@ export class BubbleShooter extends Phaser.GameObjects.Container {
   }
 
   private createInitialGrid(): number[][] {
-    const grid: number[][] = [];
+    const grid: number[][]= [];
     for (let row = 0; row < this.gridRows; row++) {
       grid[row] = [];
       for (let col = 0; col < this.gridCols; col++) {
-        grid[row][col] = this.getRandomBubbleType();
+        if (row < 5) { // Например, заполняем только верхние 5 строк
+          grid[row][col] = this.getRandomBubbleType();
+        } else {
+          grid[row][col] = 0; // Пустая ячейка
+        }
       }
     }
     return grid;
   }
+
 
   private createBubbles() {
     const { scene } = this.props;
@@ -62,14 +74,17 @@ export class BubbleShooter extends Phaser.GameObjects.Container {
       this.bubbles[row] = [];
       for (let col = 0; col < this.gridCols; col++) {
         const bubbleType = this.grid[row][col];
-        const frameName = BubbleShooterAssetImages.bubbles.frameNames[bubbleType - 1];
+        const frameName = BubbleShooterAssetImages.bubbles.frameNames[bubbleType > 0 ? bubbleType - 1 : 0];
         const bubble = scene.add.sprite(
           col * 32,
           row * 32,
           BubbleShooterAssetImages.bubbles.textureName,
           frameName
         );
+        if(bubbleType===0) bubble.setAlpha(0);
+        bubble.setDisplaySize(this.bubbleSize, this.bubbleSize);
         bubble.setData('type', bubbleType);
+        this.bubbleGroup.add(bubble);
         this.add(bubble);
         this.bubbles[row][col] = bubble;
       }
@@ -115,19 +130,25 @@ export class BubbleShooter extends Phaser.GameObjects.Container {
       BubbleShooterAssetImages.bubbles.textureName,
       frameName
     );
+    bubble.setDisplaySize(this.bubbleSize, this.bubbleSize);
     bubble.setData('type', this.currentBubbleType);
+
+    // Добавляем динамическое физическое тело к движущемуся пузырьку
     scene.physics.add.existing(bubble);
+    (bubble.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
+    (bubble.body as Phaser.Physics.Arcade.Body).setBounce(1, 1);
+
     const velocity = scene.physics.velocityFromRotation(angle, 400);
     (bubble.body as Phaser.Physics.Arcade.Body).setVelocity(velocity.x, velocity.y);
 
     this.emitShot();
 
-    const allBubbles = this.bubbles.flat().filter(Boolean) as Phaser.GameObjects.Sprite[];
-
-    scene.physics.add.collider(bubble, allBubbles, (b1, b2) => {
+    // Используем bubbleGroup для коллизии
+    scene.physics.add.collider(bubble, this.bubbleGroup, (b1, b2) => {
       this.handleBubbleCollision(bubble, b2 as Phaser.GameObjects.Sprite);
     });
   }
+
 
   private handleBubbleCollision(
     movingBubble: Phaser.GameObjects.Sprite,
@@ -136,11 +157,28 @@ export class BubbleShooter extends Phaser.GameObjects.Container {
     const { scene } = this.props;
     (movingBubble.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
 
-    const col = Math.round(staticBubble.x / 32);
-    const row = Math.round(staticBubble.y / 32) - 1;
+    // Отключаем физику для движущегося пузырька, так как он становится статическим
+    scene.physics.world.disable(movingBubble);
 
-    movingBubble.x = col * 32;
-    movingBubble.y = row * 32;
+    const col = Math.round(movingBubble.x / this.bubbleSize);
+    const row = Math.round(movingBubble.y / this.bubbleSize);
+
+    movingBubble.x = col * this.bubbleSize;
+    movingBubble.y = row * this.bubbleSize;
+    movingBubble.setDisplaySize(this.bubbleSize, this.bubbleSize);
+
+    // Добавляем движущийся пузырёк в bubbleGroup
+    this.bubbleGroup.add(movingBubble);
+
+    // **Динамическое расширение сетки**
+    // Проверяем, существует ли строка в сетке, если нет, добавляем новую строку
+    if (!this.grid[row]) {
+      this.grid[row] = [];
+    }
+    if (!this.bubbles[row]) {
+      this.bubbles[row] = [];
+    }
+
     this.grid[row][col] = movingBubble.getData('type');
     this.bubbles[row][col] = movingBubble;
 
@@ -149,6 +187,8 @@ export class BubbleShooter extends Phaser.GameObjects.Container {
     this.currentBubbleType = this.getRandomBubbleType();
     this.emitReadyForNextShot();
   }
+
+
 
   private checkForMatches(row: number, col: number) {
     const bubbleType = this.grid[row][col];
@@ -197,6 +237,7 @@ export class BubbleShooter extends Phaser.GameObjects.Container {
   destroy() {
     this.unSubs.forEach(unsub => unsub());
     this.props.scene.input.off('pointerdown', this.handlePointerDown, this);
+    this.bubbleGroup.clear(true, true); // Удаляем все объекты из группы и сцены
     super.destroy();
   }
 }
