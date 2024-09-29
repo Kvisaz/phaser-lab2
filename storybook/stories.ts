@@ -8,16 +8,17 @@ import { bubbleShooterClaudeStory } from "../src/components/BubbleShooterClaude"
 
 export const stories: IStoryListItem[] = Array.from(
   new Set<IStoryListItem>([
-    storyTitle("Phaser Games"),
-    bubbleShooterClaudeStory,
-    bubbleShooterStory,
-    match3Story,
-    minesweeperStory,
     storyTitle("Mini Game Machines"),
     miniGameStory,
     miniGameMachineStory,
+    storyTitle("Game Components"),
+    minesweeperStory,
     storyTitle("Simple Games"),
     testButtonStory,
-    testButtonStory2
+    testButtonStory2,
+    storyTitle("Bad Neuro Phaser Games"),
+    bubbleShooterClaudeStory,
+    bubbleShooterStory,
+    match3Story
   ])
 );
