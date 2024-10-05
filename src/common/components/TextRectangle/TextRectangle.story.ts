@@ -1,5 +1,5 @@
-import { IStory } from "../../../../storybook/interfaces";
 import { Align } from "@kvisaz/phaser-sugar";
+import { IStory } from "../../../../storybook/interfaces";
 import { TextRectangleComponent } from "./TextRectangle";
 
 export const textRectangleStory: IStory = {

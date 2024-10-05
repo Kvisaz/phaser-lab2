@@ -1,5 +1,5 @@
+import { delay } from "@kvisaz/phaser-sugar";
 import { IStory } from "../../../storybook/interfaces";
-import { delay } from "../../common";
 import { MiniGameMachine } from "./MiniGameMachine";
 import { MiniGameState } from "./interfaces";
 

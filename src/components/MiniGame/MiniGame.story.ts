@@ -1,6 +1,6 @@
+import { delay } from "@kvisaz/phaser-sugar";
 import { IStory } from "../../../storybook/interfaces";
 import { MiniGame } from "./MiniGame";
-import { delay } from "../../common";
 import { MiniGameState } from "./interfaces";
 
 export const miniGameStory: IStory = {
