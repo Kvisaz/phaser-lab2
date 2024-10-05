@@ -1,5 +1,5 @@
+import { Align } from "@kvisaz/phaser-sugar";
 import { cssColorToInt } from "../../color";
-import { Align } from "../../layout";
 
 interface ITextRectangleComponentProps {
   scene: Phaser.Scene;
