@@ -1,4 +1,4 @@
-import { loadAssets, loadSpriteSheet } from "../../common";
+import { loadAssets } from "@kvisaz/phaser-sugar";
 
 export const bubblesTextureUrl = "./assets/atlases/match3_01.png";
 export const launcherTextureUrl = "./assets/atlases/minesweeper01.png";
@@ -15,7 +15,7 @@ export const loadBubbleShooterAssets = async (scene: Phaser.Scene) => {
       frameWidth: 128,
       frameHeight: 128,
     });
-  })
+  }, progress => console.log('progress', progress))
 };
 
 let bubbleFrameIndex = 0;

@@ -1,4 +1,4 @@
-import { loadSpriteSheet } from "../../common";
+import { loadSpriteSheet } from "@kvisaz/phaser-sugar";
 
 export const url = "./assets/atlases/minesweeper01.png";
 export const textureName = "minesweeper";

@@ -35,6 +35,6 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
-    "@kvisaz/phaser-sugar": "^1.0.8"
+    "@kvisaz/phaser-sugar": "^1.0.10"
   }
 }

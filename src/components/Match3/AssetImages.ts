@@ -1,5 +1,5 @@
 // AssetImages
-import { loadSpriteSheet } from "../../common";
+import { loadSpriteSheet } from "@kvisaz/phaser-sugar";
 
 export const url = "./assets/atlases/match3_01.png";
 export const textureName = "match3_01";
