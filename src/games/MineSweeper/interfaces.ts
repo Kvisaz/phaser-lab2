@@ -1,10 +1,16 @@
 /** todo вычислить это во время игры **/
-export interface IMineSweeperFieldState {
+export interface IMineSweeperFieldStats {
   time: number;
   openedCells: number;
   flaggedMines: number;
   incorrectFlags: number;
   multiplier: number;
+}
+
+export interface IMineSweeperFieldConfig {
+  columns: number;
+  rows: number;
+  mines: number;
 }
 
 export const MINE_DENSITY = {

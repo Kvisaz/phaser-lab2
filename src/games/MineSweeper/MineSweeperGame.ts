@@ -1,6 +1,7 @@
 import { MiniGameMachine, MiniGameState } from "../../components/MiniGame";
 import { loadMineSweeperAssets, Minesweeper } from "../../components/Minesweeper";
 import { Align } from "@kvisaz/phaser-sugar";
+import { mineSweeperDisplayConfig } from "./config";
 
 export interface IMineSweeperGameState {
   playerGold: number;
@@ -40,7 +41,7 @@ export class MineSweeperGame {
         this.components.mineSweeperGame?.destroy();
         const mineGame = new Minesweeper({
           scene,
-          cellSize: 32,
+          cellSize: mineSweeperDisplayConfig.cellSize,
           columns: 10,
           rows: 10,
           minesAmount: 10,
