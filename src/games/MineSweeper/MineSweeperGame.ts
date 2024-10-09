@@ -1,7 +1,8 @@
+import { Align } from "@kvisaz/phaser-sugar";
 import { MiniGameMachine, MiniGameState } from "../../components/MiniGame";
 import { loadMineSweeperAssets, Minesweeper } from "../../components/Minesweeper";
-import { Align } from "@kvisaz/phaser-sugar";
 import { mineSweeperDisplayConfig } from "./config";
+import { scaleToSceneSize } from "../../common";
 
 export interface IMineSweeperGameState {
   playerGold: number;
@@ -54,6 +55,7 @@ export class MineSweeperGame {
             router.go(MiniGameState.GameOver);
           }
         });
+        scaleToSceneSize(mineGame, 0.8);
         sceneAlign.center(mineGame);
         scene.add.existing(mineGame);
         this.components.mineSweeperGame = mineGame;

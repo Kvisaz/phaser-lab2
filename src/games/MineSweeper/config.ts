@@ -20,5 +20,5 @@ export const mineSweeperConfig = {
 };
 
 export const mineSweeperDisplayConfig = {
-  cellSize: 128
+  cellSize: 64
 }
