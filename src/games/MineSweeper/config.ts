@@ -20,5 +20,6 @@ export const mineSweeperConfig = {
 };
 
 export const mineSweeperDisplayConfig = {
-  cellSize: 64
+  cellSize: 64,
+  scaleOfScene: 0.8
 }

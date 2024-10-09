@@ -55,7 +55,7 @@ export class MineSweeperGame {
             router.go(MiniGameState.GameOver);
           }
         });
-        scaleToSceneSize(mineGame, 0.8);
+        scaleToSceneSize(mineGame, mineSweeperDisplayConfig.scaleOfScene);
         sceneAlign.center(mineGame);
         scene.add.existing(mineGame);
         this.components.mineSweeperGame = mineGame;
