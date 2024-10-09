@@ -6,51 +6,73 @@ export interface IMineSweeperGameState {
 }
 
 export class MineSweeperGame {
-  private game: MiniGameMachine<IMineSweeperGameState>;
+  private stateMachine: MiniGameMachine<IMineSweeperGameState>;
 
-  constructor(scene: Phaser.Scene) {
-    this.game = new MiniGameMachine({
+  /** очищаемые компоненты при разрушении игры **/
+  private components: {
+    mineSweeperGame?: Minesweeper;
+  } = {};
+
+  constructor(private scene: Phaser.Scene) {
+
+    this.stateMachine = new MiniGameMachine({
       scene,
-      initialData: { playerGold: 2 },
+      initialData: { playerGold: 2, isGameOver: false, isPlayerWin: false },
       boot: async (scene, router) => {
         console.log("boot!");
         await loadMineSweeperAssets(scene);
         // router.setData({ playerGold: 3 });
+
+
         router.go(MiniGameState.StartMenu);
       },
       startMenu: async (scene, router) => {
+        this.destroyComponents();
         console.log("startMenu!");
         // router.setData(prevData => ({ playerGold: prevData.playerGold + 100 }));
-        // console.log("game data", router.getData());
+        // console.log("stateMachine data", router.getData());
+
         router.go(MiniGameState.Game);
       },
       game: async (scene, router) => {
         console.log("game!");
+        this.components.mineSweeperGame?.destroy();
         const mineGame = new Minesweeper({
           scene,
           cellSize: 32,
           columns: 10,
           rows: 10,
           minesAmount: 10,
-          onGameOver: async () => {
-            mineGame.destroy();
+          onGameOver: async (isWin) => {
+            router.setData(prevData => ({
+              ...prevData,
+              isGameOver: true,
+              isPlayerWin: isWin
+            }))
             router.go(MiniGameState.GameOver);
           }
-        })
+        });
         scene.add.existing(mineGame);
+        this.components.mineSweeperGame = mineGame;
       },
       gameOver: async (scene, router) => {
-        console.log("gameOver!");
+        const gameState = router.getData();
+        console.log("gameOver!", gameState);
         // await delay(1000);
         // router.setData(prevData => ({ playerGold: 0 }));
-        // console.log("game data", router.getData());
+        // console.log("stateMachine data", router.getData());
         // if (cycles >= maxCycles) console.log("cycles over", maxCycles);
         // else router.go(MiniGameState.StartMenu);
       }
     });
   }
 
+  destroyComponents(){
+    Object.values(this.components).forEach(object => object?.destroy());
+  }
+
   destroy() {
-    this.game.destroy();
+    this.destroyComponents();
+    this.stateMachine.destroy();
   }
 }
