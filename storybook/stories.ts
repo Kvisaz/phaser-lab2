@@ -10,9 +10,10 @@ import { textRectangleStory } from "../src/common/components/TextRectangle/TextR
 
 export const stories: IStoryListItem[] = Array.from(
   new Set<IStoryListItem>([
-    textRectangleStory,
     storyTitle("Mini Games"),
     mineSweeperGameStory,
+    storyTitle("Simple Components"),
+    textRectangleStory,
     storyTitle("Mini Game Machines"),
     miniGameStory,
     miniGameMachineStory,
