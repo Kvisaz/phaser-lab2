@@ -1,5 +1,6 @@
 import { MiniGameMachine, MiniGameState } from "../../components/MiniGame";
 import { loadMineSweeperAssets, Minesweeper } from "../../components/Minesweeper";
+import { Align } from "@kvisaz/phaser-sugar";
 
 export interface IMineSweeperGameState {
   playerGold: number;
@@ -14,7 +15,7 @@ export class MineSweeperGame {
   } = {};
 
   constructor(private scene: Phaser.Scene) {
-
+    const sceneAlign = new Align().anchorSceneScreen(scene);
     this.stateMachine = new MiniGameMachine({
       scene,
       initialData: { playerGold: 2, isGameOver: false, isPlayerWin: false },
@@ -52,6 +53,7 @@ export class MineSweeperGame {
             router.go(MiniGameState.GameOver);
           }
         });
+        sceneAlign.center(mineGame);
         scene.add.existing(mineGame);
         this.components.mineSweeperGame = mineGame;
       },
