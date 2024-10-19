@@ -22,7 +22,7 @@ export class MineSweeperGame {
       scene,
       initialData: { playerGold: 2, isGameOver: false, isPlayerWin: false },
       boot: async (scene, router) => {
-        console.log("boot!");
+        console.log("boot! Starting work with AI assistant.");
         await loadMineSweeperAssets(scene);
         // router.setData({ playerGold: 3 });
 
