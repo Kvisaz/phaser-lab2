@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Простые эффекты на Canvas</title>
+  <style>
+      body, html {
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+      }
+
+      canvas {
+          display: block;
+      }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  /*
+   * Эффект 1: Закрашивание холста случайными цветами
+   */
+  function fillCanvasWithRandomColors() {
+    const r = Math.floor(Math.random() * 255);
+    const g = Math.floor(Math.random() * 255);
+    const b = Math.floor(Math.random() * 255);
+    ctx.fillStyle = `rgb(${r},${g},${b})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function fillCanvasWithBlack() {
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+
+  /*
+   * Эффект 2: Движущийся круг
+   */
+  let angle = 0;
+  const radius = 50;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+
+  function drawMovingCircle() {
+    const x = centerX + Math.cos(angle) * 200;
+    const y = centerY + Math.sin(angle) * 200;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.closePath();
+
+    angle += 0.05;
+  }
+
+  /*
+   * Эффект 3: Падающие точки
+   */
+  const fallingDots = [];
+  for (let i = 0; i < 100; i++) {
+    fallingDots.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      speed: Math.random() * 3 + 1,
+      size: Math.random() * 2 + 1
+    });
+  }
+
+  function drawFallingDots() {
+    fallingDots.forEach(dot => {
+      ctx.beginPath();
+      ctx.arc(dot.x, dot.y, dot.size, 0, Math.PI * 2);
+      ctx.fillStyle = 'yellow';
+      ctx.fill();
+      ctx.closePath();
+
+      dot.y += dot.speed;
+      if (dot.y > canvas.height) {
+        dot.y = 0;
+        dot.x = Math.random() * canvas.width;
+      }
+    });
+  }
+
+  /*
+   * Основной цикл: обновление и рендеринг эффектов
+   */
+  function update() {
+
+    fillCanvasWithBlack();
+    // Закрасим холст случайным цветом перед каждым обновлением
+    // fillCanvasWithRandomColors();
+
+    // Рисуем движущийся круг
+    drawMovingCircle();
+
+    // Рисуем падающие точки
+    drawFallingDots();
+
+    requestAnimationFrame(update);
+  }
+
+  update();
+
+  /*
+   * Обработка изменения размера окна.
+   */
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Particle Effect</title>
+  <style>
+      body {
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          background-color: #f0f0f0;
+      }
+      canvas {
+          border: 1px solid #000;
+      }
+  </style>
+</head>
+<body>
+<canvas id="myCanvas" width="400" height="400"></canvas>
+
+<script>
+  const canvas = document.getElementById('myCanvas');
+  const ctx = canvas.getContext('2d');
+
+  let particles = [];
+
+  function Particle(x, y, radius, color) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+    this.velocity = {
+      x: (Math.random() - 0.5) * 2,
+      y: (Math.random() - 0.5) * 2
+    };
+  }
+
+  Particle.prototype.draw = function() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  Particle.prototype.update = function() {
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
+
+    if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+      this.velocity.x = -this.velocity.x;
+    }
+    if (this.y + this.radius > canvas.height || this.y - this.radius < 0) {
+      this.velocity.y = -this.velocity.y;
+    }
+
+    this.draw();
+  }
+
+  function createParticles(num) {
+    for (let i = 0; i < num; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const radius = Math.random() * 5 + 1;
+      const color = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.8)`;
+
+      particles.push(new Particle(x, y, radius, color));
+    }
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(particle => {
+      particle.update();
+    });
+  }
+
+  createParticles(50);
+  animate();
+</script>
+</body>
+</html>
