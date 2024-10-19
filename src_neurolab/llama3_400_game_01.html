@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Простые эффекты на canvas</title>
+  <style>
+      canvas {
+          border: 1px solid black;
+      }
+  </style>
+</head>
+<body>
+<h2>Круги, движущиеся по холсту</h2>
+<canvas id="canvas1" width="400" height="200"></canvas>
+
+<h2>Градиент, который изменяется по времени</h2>
+<canvas id="canvas2" width="400" height="200"></canvas>
+
+<h2>Текст, движущийся по холсту</h2>
+<canvas id="canvas3" width="400" height="200"></canvas>
+
+<h2>Мигающая звезда</h2>
+<canvas id="canvas4" width="400" height="200"></canvas>
+
+<script>
+  //Canvas1: Круги, движущиеся по холсту
+  let canvas1 = document.getElementById('canvas1');
+  let ctx1 = canvas1.getContext('2d');
+  let x1 = 0;
+  let y1 = 0;
+  let speedX1 = 2;
+  let speedY1 = 2;
+  function drawCanvas1() {
+    ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+    ctx1.beginPath();
+    ctx1.arc(x1, y1, 20, 0, 2 * Math.PI);
+    ctx1.fillStyle = 'blue';
+    ctx1.fill();
+    x1 += speedX1;
+    y1 += speedY1;
+    if (x1 > canvas1.width - 20 || x1 < 20) speedX1 = -speedX1;
+    if (y1 > canvas1.height - 20 || y1 < 20) speedY1 = -speedY1;
+    requestAnimationFrame(drawCanvas1);
+  }
+  drawCanvas1();
+
+  //Canvas2: Градиент, который изменяется по времени
+  let canvas2 = document.getElementById('canvas2');
+  let ctx2 = canvas2.getContext('2d');
+  let angle = 0;
+  function drawCanvas2() {
+    ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+    let gradient = ctx2.createLinearGradient(0, 0, canvas2.width, 0);
+    gradient.addColorStop(0, `hsl(${angle}, 100%, 50%)`);
+    gradient.addColorStop(1, `hsl(${angle + 120}, 100%, 50%)`);
+    ctx2.fillStyle = gradient;
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    angle++;
+    requestAnimationFrame(drawCanvas2);
+  }
+  drawCanvas2();
+
+  //Canvas3: Текст, движущийся по холсту
+  let canvas3 = document.getElementById('canvas3');
+  let ctx3 = canvas3.getContext('2d');
+  let x3 = 0;
+  let speedX3 = 2;
+  function drawCanvas3() {
+    ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
+    ctx3.font = "36px Arial";
+    ctx3.fillStyle = 'red';
+    ctx3.textAlign = 'left';
+    ctx3.textBaseline = 'top';
+    ctx3.fillText('Привет, мир!', x3, 10);
+    x3 += speedX3;
+    if (x3 > canvas3.width) x3 = -100;
+    requestAnimationFrame(drawCanvas3);
+  }
+  drawCanvas3();
+
+  //Canvas4: Мигающая звезда
+  let canvas4 = document.getElementById('canvas4');
+  let ctx4 = canvas4.getContext('2d');
+  let angle4 = 0;
+  function drawCanvas4() {
+    ctx4.clearRect(0, 0, canvas4.width, canvas4.height);
+    ctx4.beginPath();
+    ctx4.moveTo(canvas4.width / 2, canvas4.height / 2);
+    for (let i = 0; i < 5; i++) {
+      angle = angle4 + i * Math.PI * 2 / 5;
+      ctx4.lineTo(canvas4.width / 2 + Math.cos(angle) * (20 + 10 * Math.sin(angle4)), canvas4.height / 2 + Math.sin(angle) * (20 + 10 * Math.sin(angle4)));
+    }
+    ctx4.fillStyle = 'yellow';
+    ctx4.fill();
+    angle4 += 0.05;
+    requestAnimationFrame(drawCanvas4);
+  }
+  drawCanvas4();
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Змейка</title>
+  <style>
+      canvas {
+          border: 1px solid black;
+      }
+  </style>
+</head>
+<body>
+<canvas id="canvas" width="400" height="400"></canvas>
+<script>
+  // Инициализация игры
+  let canvas = document.getElementById('canvas');
+  let ctx = canvas.getContext('2d');
+  let score = 0;
+  let snake = [{x: 100, y: 100}, {x: 90, y: 100}, {x: 80, y: 100}];
+  let direction = 'right';
+  let apple = null;
+
+  let speed = 100;
+  let appleDiameter = 20;
+  let snakeDiameter = 20;
+
+
+  // Генерация яблока
+  function generateApple() {
+    let x = Math.floor(Math.random() * (canvas.width - appleDiameter)) + appleDiameter / 2;
+    let y = Math.floor(Math.random() * (canvas.height - appleDiameter)) + appleDiameter / 2;
+    x = Math.round(x / appleDiameter) * appleDiameter;
+    y = Math.round(y / appleDiameter) * appleDiameter;
+    apple = {x: x, y: y};
+  }
+
+  generateApple();
+
+  // Отрисовка игрового поля
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < snake.length; i++) {
+      ctx.beginPath();
+      ctx.arc(snake[i].x, snake[i].y, snakeDiameter / 2, 0, 2 * Math.PI);
+      ctx.fillStyle = 'green';
+      ctx.fill();
+    }
+
+    ctx.beginPath();
+    ctx.arc(apple.x, apple.y, appleDiameter / 2, 0, 2 * Math.PI);
+    ctx.fillStyle = 'red';
+    ctx.fill();
+
+    ctx.font = "24px Arial";
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('Счёт: ' + score, 10, 10);
+  }
+
+  // Обработка нажатий клавиш
+  document.addEventListener('keydown', function(event) {
+    switch (event.keyCode) {
+      case 37:
+        if (direction != 'right') direction = 'left';
+        break;
+      case 38:
+        if (direction != 'down') direction = 'up';
+        break;
+      case 39:
+        if (direction != 'left') direction = 'right';
+        break;
+      case 40:
+        if (direction != 'up') direction = 'down';
+        break;
+    }
+  });
+
+  // Обновление игрового состояния
+  function update() {
+    let head = snake[0];
+    // Обновление положения головы змеи
+    let newHead = null;
+    switch (direction) {
+      case 'left':
+        newHead = {x: head.x - snakeDiameter, y: head.y};
+        break;
+      case 'right':
+        newHead = {x: head.x + snakeDiameter, y: head.y};
+        break;
+      case 'up':
+        newHead = {x: head.x, y: head.y - snakeDiameter};
+        break;
+      case 'down':
+        newHead = {x: head.x, y: head.y + snakeDiameter};
+        break;
+    }
+    // Переход через стены
+    if (newHead.x < 0) newHead.x = canvas.width - 10;
+    if (newHead.x >= canvas.width) newHead.x = 0;
+    if (newHead.y < 0) newHead.y = canvas.height - 10;
+    if (newHead.y >= canvas.height) newHead.y = 0;
+    snake.unshift(newHead);
+    // Проверка съедения яблока
+    // Проверка съедения яблока
+    // Проверка съедения яблока
+    if (Math.abs(newHead.x - apple.x) < (snakeDiameter / 2 + appleDiameter / 2) && Math.abs(newHead.y - apple.y) < (snakeDiameter / 2 + appleDiameter / 2)) {
+      score++;
+      generateApple();
+    }
+    else {
+      snake.pop();
+    }
+    // Проверка столкновения с собой
+    for (let i = 1; i < snake.length; i++) {
+      if (newHead.x == snake[i].x && newHead.y == snake[i].y) {
+        alert('Игра окончена! Ваши очки: ' + score);
+        location.reload();
+      }
+    }
+  }
+
+  let lastTime = 0;
+  function loop(time) {
+    if (time - lastTime >= speed) {
+      update();
+      draw();
+      lastTime = time;
+    }
+    requestAnimationFrame(loop);
+  }
+
+  loop();
+</script>
+</body>
+</html>
