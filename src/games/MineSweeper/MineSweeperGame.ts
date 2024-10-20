@@ -1,6 +1,6 @@
 import { Align } from "@kvisaz/phaser-sugar";
 import { MiniGameMachine, MiniGameState } from "../../components/MiniGame";
-import { loadMineSweeperAssets, Minesweeper } from "../../components/Minesweeper";
+import { MineSweeperAssetImages, Minesweeper } from "../../components/Minesweeper";
 import { mineSweeperDisplayConfig } from "./config";
 import { scaleToSceneSize } from "../../common";
 
@@ -23,7 +23,7 @@ export class MineSweeperGame {
       initialData: { playerGold: 2, isGameOver: false, isPlayerWin: false },
       boot: async (scene, router) => {
         console.log("boot! Starting work with AI assistant.");
-        await loadMineSweeperAssets(scene);
+        await MineSweeperAssetImages.load(scene);
         // router.setData({ playerGold: 3 });
 
 
@@ -51,7 +51,7 @@ export class MineSweeperGame {
               ...prevData,
               isGameOver: true,
               isPlayerWin: isWin
-            }))
+            }));
             router.go(MiniGameState.GameOver);
           }
         });
@@ -72,7 +72,7 @@ export class MineSweeperGame {
     });
   }
 
-  destroyComponents(){
+  destroyComponents() {
     Object.values(this.components).forEach(object => object?.destroy());
   }
 

@@ -1,33 +1,32 @@
 import { loadSpriteSheet } from "@kvisaz/phaser-sugar";
 
-export const url = "./assets/atlases/minesweeper01.png";
-export const textureName = "minesweeper";
+const url = "./assets/atlases/minesweeper01.png";
+const textureName = "minesweeper";
 
-export const loadMineSweeperAssets = async (scene: Phaser.Scene) => loadSpriteSheet({
-  scene,
-  url,
-  textureName,
-  frameWidth: 128, frameHeight: 128
-})
+export const MineSweeperAssetImages = {
+  async load(scene: Phaser.Scene): Promise<void> {
+    await loadSpriteSheet({
+      scene,
+      url,
+      textureName,
+      frameWidth: 128,
+      frameHeight: 128
+    });
+  },
 
-let frameIndex = 0;
-/** Располагай спрайты в их порядке в листе! **/
-export const AssetImages = {
-  cell: {
-    textureName,
-    frameIndex: frameIndex++
+  cell(scene: Phaser.Scene): Phaser.GameObjects.Image {
+    return scene.add.image(0, 0, textureName, 0);
   },
-  revealedCell: {
-    textureName,
-    frameIndex: frameIndex++
+
+  revealedCell(scene: Phaser.Scene): Phaser.GameObjects.Image {
+    return scene.add.image(0, 0, textureName, 1);
   },
-  flag: {
-    textureName,
-    frameIndex: frameIndex++
+
+  flag(scene: Phaser.Scene): Phaser.GameObjects.Image {
+    return scene.add.image(0, 0, textureName, 2);
   },
-  mine: {
-    textureName,
-    frameIndex: frameIndex++
-  },
+
+  mine(scene: Phaser.Scene): Phaser.GameObjects.Image {
+    return scene.add.image(0, 0, textureName, 3);
+  }
 };
-

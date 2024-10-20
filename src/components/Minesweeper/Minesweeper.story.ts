@@ -1,12 +1,12 @@
 import { IStory } from "../../../storybook/interfaces";
 import { Minesweeper } from "./Minesweeper";
-import { loadMineSweeperAssets } from "./AssetImages";
+import { MineSweeperAssetImages } from "./AssetImages";
 
 export const minesweeperStory: IStory = {
   title: "Minesweeper",
   run: async (scene) => {
 
-    await loadMineSweeperAssets(scene);
+    await MineSweeperAssetImages.load(scene);
 
     const container = new Minesweeper({
       scene,
