@@ -50,8 +50,8 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
     this.scene.add.existing(this);
   }
 
-  updateState(state: IMineSweeperFieldState) {
-    this.timeText.setText(state.time.toString().padStart(3, "0"));
+  updateState(state: IMineSweeperFieldState, isGameStarted: boolean) {
+    this.timeText.setText(isGameStarted ? state.time.toString().padStart(3, "0") : "000");
     this.flagsText.setText(state.flaggedMines.toString().padStart(3, "0"));
   }
 

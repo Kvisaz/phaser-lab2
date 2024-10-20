@@ -11,6 +11,7 @@ export interface IMineSweeperGameState {
   fieldState: IMineSweeperFieldState;
   isGameOver: boolean;
   isPlayerWin: boolean;
+  isGameStarted: boolean;
 }
 
 export class MineSweeperGame {
@@ -32,6 +33,7 @@ export class MineSweeperGame {
         playerGold: 2,
         isGameOver: false,
         isPlayerWin: false,
+        isGameStarted: false,
         fieldState: {
           time: 0,
           openedCells: 0,
@@ -61,6 +63,9 @@ export class MineSweeperGame {
           minesAmount: 10,
           hardLevelMultiplier: 1,
           onCellReveal: () => {
+            if (!router.getData().isGameStarted) {
+              router.setData(prevData => ({ ...prevData, isGameStarted: true }));
+            }
             const newFieldState = mineGame.getFieldState();
             this.components.mineSweeperUI?.updateState(newFieldState);
             this.components.mineSweeperUI?.setSmileyState('worried');
@@ -102,12 +107,15 @@ export class MineSweeperGame {
         this.updateInterval = scene.time.addEvent({
           delay: 1000, // Update every second
           callback: () => {
-            const newFieldState = mineGame.getFieldState();
-            router.setData(prevData => ({
-              ...prevData,
-              fieldState: newFieldState
-            }));
-            this.components.mineSweeperUI?.updateState(newFieldState);
+            const gameState = router.getData();
+            if (gameState.isGameStarted) {
+              const newFieldState = mineGame.getFieldState();
+              router.setData(prevData => ({
+                ...prevData,
+                fieldState: newFieldState
+              }));
+              this.components.mineSweeperUI?.updateState(newFieldState);
+            }
           },
           loop: true
         });
