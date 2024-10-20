@@ -4,4 +4,5 @@ export interface IMineSweeperFieldState {
   flaggedMines: number;
   incorrectFlags: number;
   multiplier: number;
+  isGameStarted: boolean;
 }

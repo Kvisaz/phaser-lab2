@@ -21,40 +21,37 @@ export class Minesweeper extends Phaser.GameObjects.Container {
   private rows: number;
   private minesAmount: number;
   private flagsLeft: number;
-  private onCellReveal?: (cell: Cell) => void;
-  private onGameOver?: (isWin: boolean) => void;
+
   private isGameOver: boolean = false;
-  private isFirstClick: boolean = true;
   private startTime: number = 0;
   private fieldState: IMineSweeperFieldState = {
     time: 0,
     openedCells: 0,
     flaggedMines: 0,
     incorrectFlags: 0,
-    multiplier: 1
+    multiplier: 1,
+    isGameStarted: false
   };
 
-  constructor({
-                scene,
-                cellSize,
-                columns,
-                rows,
-                minesAmount,
-                onCellReveal,
-                onGameOver,
-                hardLevelMultiplier
-              }: IProps) {
-    super(scene);
+  constructor(private props: IProps) {
+    super(props.scene);
+    const {
+      scene,
+      cellSize,
+      columns,
+      rows,
+      minesAmount,
+      onCellReveal,
+      onGameOver,
+      hardLevelMultiplier
+    } = this.props;
 
     this.fieldState.multiplier = hardLevelMultiplier;
-
     this.cellSize = cellSize;
     this.columns = columns;
     this.rows = rows;
     this.minesAmount = minesAmount;
     this.flagsLeft = minesAmount;
-    this.onCellReveal = onCellReveal;
-    this.onGameOver = onGameOver;
 
     this.grid = [];
     this.freeCells = [];
@@ -160,10 +157,10 @@ export class Minesweeper extends Phaser.GameObjects.Container {
   private handleCellClick(cell: Cell) {
     if (this.isGameOver || cell.isRevealed || cell.isFlagged) return;
 
-    if (this.isFirstClick) {
+    if (this.fieldState.isGameStarted !== true) {
       this.ensureSafeFirstClick(cell);
-      this.isFirstClick = false;
       this.startTime = Date.now();
+      this.fieldState.isGameStarted = true;
     }
 
     cell.reveal();
@@ -175,9 +172,7 @@ export class Minesweeper extends Phaser.GameObjects.Container {
       this.revealAdjacentCells(cell);
     }
 
-    if (this.onCellReveal) {
-      this.onCellReveal(cell);
-    }
+    this.props.onCellReveal?.(cell);
 
     if (this.checkWinCondition()) {
       this.gameOver(true);
@@ -235,10 +230,7 @@ export class Minesweeper extends Phaser.GameObjects.Container {
       }
     }
 
-    if (this.onCellReveal) {
-      this.onCellReveal(cell);
-    }
-
+    this.props.onCellReveal?.(cell);
     this.updateFieldState();
   }
 
@@ -279,12 +271,11 @@ export class Minesweeper extends Phaser.GameObjects.Container {
       });
     }
 
-    if (this.onGameOver) {
-      this.onGameOver(isWin);
-    }
+    this.props.onGameOver?.(isWin);
   }
 
   private updateFieldState() {
+    if (this.fieldState.isGameStarted !== true) return;
     this.fieldState.time = Math.floor((Date.now() - this.startTime) / 1000);
   }
 

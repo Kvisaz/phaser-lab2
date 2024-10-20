@@ -1,4 +1,4 @@
-import { IMineSweeperFieldState } from "../../games/MineSweeper/interfaces";
+import { IMineSweeperFieldState } from "./interfaces";
 import { Align } from "@kvisaz/phaser-sugar";
 
 interface IMineSweeperUIProps {
@@ -23,7 +23,7 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
     const background = this.scene.add.rectangle(0, 0, width, height, 0xCCCCCC);
     this.add(background);
 
-    const textStyle: Phaser.GameObjects.TextStyle = { fontSize: "24px", color: "#FF0000" };
+    const textStyle: Partial<Phaser.GameObjects.TextStyle> = { fontSize: "24px", color: "#FF0000" };
 
     // Flags display
     this.flagsText = this.scene.add.text(width / 2 - 10, 0, "000", textStyle);
@@ -50,8 +50,8 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
     this.scene.add.existing(this);
   }
 
-  updateState(state: IMineSweeperFieldState, isGameStarted: boolean) {
-    this.timeText.setText(isGameStarted ? state.time.toString().padStart(3, "0") : "000");
+  updateState(state: IMineSweeperFieldState) {
+    this.timeText.setText(state.isGameStarted ? state.time.toString().padStart(3, "0") : "000");
     this.flagsText.setText(state.flaggedMines.toString().padStart(3, "0"));
   }
 

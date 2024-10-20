@@ -1,17 +1,14 @@
 import { Align } from "@kvisaz/phaser-sugar";
 import { MiniGameMachine, MiniGameState } from "../../components/MiniGame";
-import { MineSweeperAssetImages, Minesweeper } from "../../components/Minesweeper";
-import { MineSweeperUI } from "../../components/Minesweeper/MineSweeperUI";
+import { MineSweeperAssetImages, Minesweeper, IMineSweeperFieldState, MineSweeperUI } from "../../components/Minesweeper";
 import { mineSweeperDisplayConfig } from "./config";
 import { scaleToSceneSize } from "../../common";
-import { IMineSweeperFieldState } from "./interfaces";
 
 export interface IMineSweeperGameState {
   playerGold: number;
   fieldState: IMineSweeperFieldState;
   isGameOver: boolean;
   isPlayerWin: boolean;
-  isGameStarted: boolean;
 }
 
 export class MineSweeperGame {
@@ -33,13 +30,14 @@ export class MineSweeperGame {
         playerGold: 2,
         isGameOver: false,
         isPlayerWin: false,
-        isGameStarted: false,
         fieldState: {
           time: 0,
           openedCells: 0,
           flaggedMines: 0,
           incorrectFlags: 0,
-          multiplier: 1
+          // todo set fields
+          multiplier: 1,
+          isGameStarted: false,
         }
       },
       boot: async (scene, router) => {
@@ -63,10 +61,8 @@ export class MineSweeperGame {
           minesAmount: 10,
           hardLevelMultiplier: 1,
           onCellReveal: () => {
-            if (!router.getData().isGameStarted) {
-              router.setData(prevData => ({ ...prevData, isGameStarted: true }));
-            }
             const newFieldState = mineGame.getFieldState();
+            console.log('newFieldState', newFieldState);
             this.components.mineSweeperUI?.updateState(newFieldState);
             this.components.mineSweeperUI?.setSmileyState('worried');
             scene.time.delayedCall(200, () => {
@@ -107,8 +103,9 @@ export class MineSweeperGame {
         this.updateInterval = scene.time.addEvent({
           delay: 1000, // Update every second
           callback: () => {
-            const gameState = router.getData();
-            if (gameState.isGameStarted) {
+            const fieldState = mineGame.getFieldState();
+            console.log('updateInterval', fieldState);
+            if (fieldState.isGameStarted) {
               const newFieldState = mineGame.getFieldState();
               router.setData(prevData => ({
                 ...prevData,
