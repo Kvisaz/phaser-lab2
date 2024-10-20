@@ -1,6 +1,7 @@
 import { Align } from "@kvisaz/phaser-sugar";
 import { MiniGameMachine, MiniGameState } from "../../components/MiniGame";
 import { MineSweeperAssetImages, Minesweeper } from "../../components/Minesweeper";
+import { MineSweeperUI } from "../../components/Minesweeper/MineSweeperUI";
 import { mineSweeperDisplayConfig } from "./config";
 import { scaleToSceneSize } from "../../common";
 import { IMineSweeperFieldState } from "./interfaces";
@@ -18,6 +19,7 @@ export class MineSweeperGame {
   /** очищаемые компоненты при разрушении игры **/
   private components: {
     mineSweeperGame?: Minesweeper;
+    mineSweeperUI?: MineSweeperUI;
   } = {};
 
   private updateInterval: Phaser.Time.TimerEvent | null = null;
@@ -50,7 +52,7 @@ export class MineSweeperGame {
       },
       game: async (scene, router) => {
         console.log("game!");
-        this.components.mineSweeperGame?.destroy();
+        this.destroyComponents();
         const mineGame = new Minesweeper({
           scene,
           cellSize: mineSweeperDisplayConfig.cellSize,
@@ -58,6 +60,14 @@ export class MineSweeperGame {
           rows: 10,
           minesAmount: 10,
           hardLevelMultiplier: 1,
+          onCellReveal: () => {
+            const newFieldState = mineGame.getFieldState();
+            this.components.mineSweeperUI?.updateState(newFieldState);
+            this.components.mineSweeperUI?.setSmileyState('worried');
+            scene.time.delayedCall(200, () => {
+              this.components.mineSweeperUI?.setSmileyState('normal');
+            });
+          },
           onGameOver: async (isWin) => {
             router.setData(prevData => ({
               ...prevData,
@@ -65,6 +75,7 @@ export class MineSweeperGame {
               isPlayerWin: isWin,
               fieldState: mineGame.getFieldState()
             }));
+            this.components.mineSweeperUI?.setSmileyState(isWin ? 'cool' : 'dead');
             router.go(MiniGameState.GameOver);
           }
         });
@@ -73,14 +84,31 @@ export class MineSweeperGame {
         scene.add.existing(mineGame);
         this.components.mineSweeperGame = mineGame;
 
+        // Create and position UI
+        const uiWidth = mineGame.width;
+        const uiHeight = 50; // Adjust as needed
+        const ui = new MineSweeperUI({
+          scene,
+          x: mineGame.x,
+          y: mineGame.y - mineGame.height / 2 - uiHeight / 2,
+          width: uiWidth,
+          height: uiHeight,
+          onRestart: () => {
+            router.go(MiniGameState.Game);
+          }
+        });
+        this.components.mineSweeperUI = ui;
+
         // Start updating the field state periodically
         this.updateInterval = scene.time.addEvent({
           delay: 1000, // Update every second
           callback: () => {
+            const newFieldState = mineGame.getFieldState();
             router.setData(prevData => ({
               ...prevData,
-              fieldState: mineGame.getFieldState()
+              fieldState: newFieldState
             }));
+            this.components.mineSweeperUI?.updateState(newFieldState);
           },
           loop: true
         });
