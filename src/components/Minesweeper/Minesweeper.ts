@@ -11,10 +11,6 @@ interface IProps {
   onGameOver?: (isWin: boolean) => void; // Коллбэк при завершении игры
 }
 
-/** почти хорош, но  to do
- * - как делать флаги?
- * - первый клик должен быть всегда чистым, меняй мину если она попадется
- **/
 export class Minesweeper extends Phaser.GameObjects.Container {
   private grid: Cell[][];
   private cellSize: number;
@@ -25,6 +21,7 @@ export class Minesweeper extends Phaser.GameObjects.Container {
   private onCellReveal?: (cell: Cell) => void;
   private onGameOver?: (isWin: boolean) => void;
   private isGameOver: boolean = false;
+  private isFirstClick: boolean = true;
 
   constructor({
                 scene,
@@ -73,16 +70,26 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     }
   }
 
-  private placeMines() {
+  private placeMines(excludeCell?: Cell) {
     let minesPlaced = 0;
-    while (minesPlaced < this.minesAmount) {
+    let attempts = 0;
+    const maxAttempts = 1000;
+
+    while (minesPlaced < this.minesAmount && attempts < maxAttempts) {
       const row = Phaser.Math.Between(0, this.rows - 1);
       const col = Phaser.Math.Between(0, this.columns - 1);
       const cell = this.grid[row][col];
-      if (!cell.isMine) {
+      if (!cell.isMine && (!excludeCell || cell !== excludeCell)) {
         cell.isMine = true;
         minesPlaced++;
       }
+      attempts++;
+    }
+
+    // Update minesAmount and flagsLeft if not all mines were placed
+    if (minesPlaced < this.minesAmount) {
+      this.minesAmount = minesPlaced;
+      this.flagsLeft = minesPlaced;
     }
   }
 
@@ -124,6 +131,11 @@ export class Minesweeper extends Phaser.GameObjects.Container {
   private handleCellClick(cell: Cell) {
     if (this.isGameOver || cell.isRevealed || cell.isFlagged) return;
 
+    if (this.isFirstClick) {
+      this.ensureSafeFirstClick(cell);
+      this.isFirstClick = false;
+    }
+
     cell.reveal();
     if (cell.isMine) {
       this.gameOver(false);
@@ -137,6 +149,37 @@ export class Minesweeper extends Phaser.GameObjects.Container {
 
     if (this.checkWinCondition()) {
       this.gameOver(true);
+    }
+  }
+
+  private ensureSafeFirstClick(cell: Cell) {
+    if (cell.isMine) {
+      cell.isMine = false;
+      this.moveMine(cell);
+    }
+    this.calculateAdjacentMines();
+  }
+
+  private moveMine(excludeCell: Cell) {
+    let minePlaced = false;
+    let attempts = 0;
+    const maxAttempts = 1000;
+
+    while (!minePlaced && attempts < maxAttempts) {
+      const row = Phaser.Math.Between(0, this.rows - 1);
+      const col = Phaser.Math.Between(0, this.columns - 1);
+      const newCell = this.grid[row][col];
+      if (!newCell.isMine && newCell !== excludeCell) {
+        newCell.isMine = true;
+        minePlaced = true;
+      }
+      attempts++;
+    }
+
+    // If we couldn't place the mine, reduce the mine count
+    if (!minePlaced) {
+      this.minesAmount--;
+      this.flagsLeft--;
     }
   }
 
