@@ -85,18 +85,17 @@ export class MineSweeperGame {
         this.components.mineSweeperGame = mineGame;
 
         // Create and position UI
-        const uiWidth = mineGame.width;
-        const uiHeight = 50; // Adjust as needed
+        const { width: uiWidth } = mineGame.getBounds()
+        const uiHeight = 50;
         const ui = new MineSweeperUI({
           scene,
-          x: mineGame.x,
-          y: mineGame.y - mineGame.height / 2 - uiHeight / 2,
           width: uiWidth,
           height: uiHeight,
           onRestart: () => {
             router.go(MiniGameState.Game);
           }
         });
+        sceneAlign.centerX(ui).topIn(ui);
         this.components.mineSweeperUI = ui;
 
         // Start updating the field state periodically

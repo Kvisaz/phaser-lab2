@@ -1,6 +1,6 @@
 import { MineSweeperAssetImages } from "./AssetImages";
 import { Cell } from "./Cell";
-import { IMineSweeperFieldState } from "../../games/MineSweeper/interfaces";
+import { IMineSweeperFieldState } from "./interfaces";
 
 interface IProps {
   scene: Phaser.Scene;
@@ -47,7 +47,6 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     super(scene);
 
     this.fieldState.multiplier = hardLevelMultiplier;
-    console.log('this.fieldState', this.fieldState);
 
     this.cellSize = cellSize;
     this.columns = columns;
