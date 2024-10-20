@@ -13,6 +13,7 @@ interface IProps {
 
 export class Minesweeper extends Phaser.GameObjects.Container {
   private grid: Cell[][];
+  private freeCells: Cell[];
   private cellSize: number;
   private columns: number;
   private rows: number;
@@ -43,6 +44,7 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     this.onGameOver = onGameOver;
 
     this.grid = [];
+    this.freeCells = [];
     this.createGrid();
     this.placeMines();
     this.calculateAdjacentMines();
@@ -65,31 +67,45 @@ export class Minesweeper extends Phaser.GameObjects.Container {
           onRightClick: this.handleCellRightClick.bind(this)
         });
         this.grid[row][col] = cell;
+        this.freeCells.push(cell);
         this.add(cell);
       }
     }
   }
 
   private placeMines(excludeCell?: Cell) {
-    let minesPlaced = 0;
-    let attempts = 0;
-    const maxAttempts = 1000;
-
-    while (minesPlaced < this.minesAmount && attempts < maxAttempts) {
-      const row = Phaser.Math.Between(0, this.rows - 1);
-      const col = Phaser.Math.Between(0, this.columns - 1);
-      const cell = this.grid[row][col];
-      if (!cell.isMine && (!excludeCell || cell !== excludeCell)) {
-        cell.isMine = true;
-        minesPlaced++;
-      }
-      attempts++;
+    if (this.minesAmount >= this.freeCells.length) {
+      console.warn("Warning: All cells are filled with mines!");
+      this.minesAmount = this.freeCells.length - 1;
+      this.flagsLeft = this.minesAmount;
     }
 
-    // Update minesAmount and flagsLeft if not all mines were placed
-    if (minesPlaced < this.minesAmount) {
-      this.minesAmount = minesPlaced;
-      this.flagsLeft = minesPlaced;
+    for (let i = 0; i < this.minesAmount; i++) {
+      if (this.freeCells.length === 0) break;
+
+      const randomIndex = Phaser.Math.Between(0, this.freeCells.length - 1);
+      const cell = this.freeCells[randomIndex];
+
+      if (cell.isMine) {
+        console.warn("cell.isMine in free cells array");
+        this.removeCellFromFree(cell);
+        i--;
+        continue;
+      }
+
+      if (!excludeCell || cell !== excludeCell) {
+        cell.isMine = true;
+        this.removeCellFromFree(cell);
+      } else {
+        i--; // Try again if we hit the excluded cell
+      }
+    }
+  }
+
+  private removeCellFromFree(cell: Cell) {
+    const index = this.freeCells.indexOf(cell);
+    if (index !== -1) {
+      this.freeCells.splice(index, 1);
     }
   }
 
@@ -161,25 +177,25 @@ export class Minesweeper extends Phaser.GameObjects.Container {
   }
 
   private moveMine(excludeCell: Cell) {
-    let minePlaced = false;
-    let attempts = 0;
-    const maxAttempts = 1000;
+    const freeCellsWithoutExcluded = this.freeCells.filter(cell => cell !== excludeCell);
 
-    while (!minePlaced && attempts < maxAttempts) {
-      const row = Phaser.Math.Between(0, this.rows - 1);
-      const col = Phaser.Math.Between(0, this.columns - 1);
-      const newCell = this.grid[row][col];
-      if (!newCell.isMine && newCell !== excludeCell) {
-        newCell.isMine = true;
-        minePlaced = true;
-      }
-      attempts++;
-    }
-
-    // If we couldn't place the mine, reduce the mine count
-    if (!minePlaced) {
+    if (freeCellsWithoutExcluded.length === 0) {
+      console.warn("Warning: Cannot move mine, all cells are occupied!");
       this.minesAmount--;
       this.flagsLeft--;
+      return;
+    }
+
+    const randomIndex = Phaser.Math.Between(0, freeCellsWithoutExcluded.length - 1);
+    const newMineCell = freeCellsWithoutExcluded[randomIndex];
+    newMineCell.isMine = true;
+
+    // Remove the new mine cell from freeCells
+    this.removeCellFromFree(newMineCell);
+
+    // Add the previously excluded cell back to freeCells if it's not already there
+    if (!this.freeCells.includes(excludeCell)) {
+      this.freeCells.push(excludeCell);
     }
   }
 
