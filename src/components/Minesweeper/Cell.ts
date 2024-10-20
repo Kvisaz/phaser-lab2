@@ -23,6 +23,7 @@ export class Cell extends Phaser.GameObjects.Container {
   private revealedImage: Phaser.GameObjects.Image;
   private flagImage: Phaser.GameObjects.Image;
   private mineImage: Phaser.GameObjects.Image;
+  private inputRect: Phaser.GameObjects.Rectangle;
   private text: Phaser.GameObjects.Text;
   private onClick: (cell: Cell) => void;
   private onRightClick: (cell: Cell) => void;
@@ -51,9 +52,11 @@ export class Cell extends Phaser.GameObjects.Container {
     this.revealedImage = MineSweeperAssetImages.revealedCell(scene).setDisplaySize(size, size).setVisible(false);
     this.flagImage = MineSweeperAssetImages.flag(scene).setDisplaySize(size, size).setVisible(false);
     this.mineImage = MineSweeperAssetImages.mine(scene).setDisplaySize(size, size).setVisible(false);
+    this.inputRect = new Phaser.GameObjects.Rectangle(scene, 0, 0, size, size)
+      .setDisplaySize(size, size);
 
     // Set up interactivity
-    this.unrevealedImage.setInteractive()
+    this.inputRect.setInteractive()
       .on("pointerdown", () => {
         this.pressTimer = setTimeout(() => {
           this.onRightClick(this);
@@ -80,7 +83,7 @@ export class Cell extends Phaser.GameObjects.Container {
       color: "#000"
     }).setOrigin(0.5).setVisible(false);
 
-    this.add([this.unrevealedImage, this.revealedImage, this.flagImage, this.mineImage, this.text]);
+    this.add([this.inputRect, this.unrevealedImage, this.revealedImage, this.flagImage, this.mineImage, this.text]);
     this.setSize(size, size);
     this.setPosition(x + size / 2, y + size / 2);
   }
