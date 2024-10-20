@@ -287,8 +287,6 @@ export class Minesweeper extends Phaser.GameObjects.Container {
 
   private updateFieldState() {
     this.fieldState.time = Math.floor((Date.now() - this.startTime) / 1000);
-    // You can implement your own logic for calculating the multiplier here
-    this.fieldState.multiplier = 1 + (this.fieldState.openedCells / (this.rows * this.columns)) * 0.5;
   }
 
   public getFieldState(): IMineSweeperFieldState {
