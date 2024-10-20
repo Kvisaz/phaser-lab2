@@ -1,5 +1,6 @@
 import { MineSweeperAssetImages } from "./AssetImages";
 import { Cell } from "./Cell";
+import { IMineSweeperFieldState } from "../../games/MineSweeper/interfaces";
 
 interface IProps {
   scene: Phaser.Scene;
@@ -7,6 +8,7 @@ interface IProps {
   columns: number;
   rows: number;
   minesAmount: number;
+  hardLevelMultiplier: number;
   onCellReveal?: (cell: Cell) => void; // Коллбэк при открытии ячейки
   onGameOver?: (isWin: boolean) => void; // Коллбэк при завершении игры
 }
@@ -23,6 +25,14 @@ export class Minesweeper extends Phaser.GameObjects.Container {
   private onGameOver?: (isWin: boolean) => void;
   private isGameOver: boolean = false;
   private isFirstClick: boolean = true;
+  private startTime: number = 0;
+  private fieldState: IMineSweeperFieldState = {
+    time: 0,
+    openedCells: 0,
+    flaggedMines: 0,
+    incorrectFlags: 0,
+    multiplier: 1
+  };
 
   constructor({
                 scene,
@@ -31,9 +41,13 @@ export class Minesweeper extends Phaser.GameObjects.Container {
                 rows,
                 minesAmount,
                 onCellReveal,
-                onGameOver
+                onGameOver,
+                hardLevelMultiplier
               }: IProps) {
     super(scene);
+
+    this.fieldState.multiplier = hardLevelMultiplier;
+    console.log('this.fieldState', this.fieldState);
 
     this.cellSize = cellSize;
     this.columns = columns;
@@ -150,9 +164,12 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     if (this.isFirstClick) {
       this.ensureSafeFirstClick(cell);
       this.isFirstClick = false;
+      this.startTime = Date.now();
     }
 
     cell.reveal();
+    this.fieldState.openedCells++;
+
     if (cell.isMine) {
       this.gameOver(false);
     } else if (cell.adjacentMines === 0) {
@@ -166,6 +183,8 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     if (this.checkWinCondition()) {
       this.gameOver(true);
     }
+
+    this.updateFieldState();
   }
 
   private ensureSafeFirstClick(cell: Cell) {
@@ -205,15 +224,30 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     cell.toggleFlag();
     this.flagsLeft += cell.isFlagged ? -1 : 1;
 
+    if (cell.isFlagged) {
+      this.fieldState.flaggedMines++;
+      if (!cell.isMine) {
+        this.fieldState.incorrectFlags++;
+      }
+    } else {
+      this.fieldState.flaggedMines--;
+      if (!cell.isMine) {
+        this.fieldState.incorrectFlags--;
+      }
+    }
+
     if (this.onCellReveal) {
       this.onCellReveal(cell);
     }
+
+    this.updateFieldState();
   }
 
   private revealAdjacentCells(cell: Cell) {
     this.getNeighbors(cell).forEach((neighbor) => {
       if (!neighbor.isRevealed && !neighbor.isFlagged) {
         neighbor.reveal();
+        this.fieldState.openedCells++;
         if (neighbor.adjacentMines === 0) {
           this.revealAdjacentCells(neighbor);
         }
@@ -249,5 +283,16 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     if (this.onGameOver) {
       this.onGameOver(isWin);
     }
+  }
+
+  private updateFieldState() {
+    this.fieldState.time = Math.floor((Date.now() - this.startTime) / 1000);
+    // You can implement your own logic for calculating the multiplier here
+    this.fieldState.multiplier = 1 + (this.fieldState.openedCells / (this.rows * this.columns)) * 0.5;
+  }
+
+  public getFieldState(): IMineSweeperFieldState {
+    this.updateFieldState();
+    return { ...this.fieldState };
   }
 }

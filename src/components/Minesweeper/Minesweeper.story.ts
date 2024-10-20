@@ -14,6 +14,7 @@ export const minesweeperStory: IStory = {
       columns: 10,
       rows: 10,
       minesAmount: 15,
+      hardLevelMultiplier: 1,
       onCellReveal: cell => {
         console.log("onCellReveal", cell);
       },

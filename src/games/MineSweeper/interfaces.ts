@@ -1,5 +1,5 @@
 /** todo вычислить это во время игры **/
-export interface IMineSweeperFieldStats {
+export interface IMineSweeperFieldState {
   time: number;
   openedCells: number;
   flaggedMines: number;
