@@ -41,8 +41,6 @@ export class Minesweeper extends Phaser.GameObjects.Container {
       columns,
       rows,
       minesAmount,
-      onCellReveal,
-      onGameOver,
       hardLevelMultiplier
     } = this.props;
 
@@ -259,19 +257,20 @@ export class Minesweeper extends Phaser.GameObjects.Container {
   }
 
   private gameOver(isWin: boolean) {
-    this.isGameOver = true;
-    if (!isWin) {
-      // Открыть все мины
-      this.grid.forEach((row) => {
-        row.forEach((cell) => {
-          if (cell.isMine) {
-            cell.reveal();
-          }
+    this.scene.time.delayedCall(1250, () => {
+      this.isGameOver = true;
+      if (!isWin) {
+        // Открыть все мины
+        this.grid.forEach((row) => {
+          row.forEach((cell) => {
+            if (cell.isMine) {
+              cell.reveal();
+            }
+          });
         });
-      });
-    }
-
-    this.props.onGameOver?.(isWin);
+      }
+      this.props.onGameOver?.(isWin);
+    });
   }
 
   private updateFieldState() {

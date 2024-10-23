@@ -1,33 +1,12 @@
-import { Align } from "@kvisaz/phaser-sugar";
-import { MiniGameMachine, MiniGameState } from "../../components/MiniGame";
-import { MineSweeperAssetImages, Minesweeper, IMineSweeperFieldState, MineSweeperUI } from "../../components/Minesweeper";
-import { mineSweeperConfig, mineSweeperDisplayConfig } from "./config";
-import { scaleToSceneSize } from "../../common";
-import { StartMenu, GameOver } from "./components";
-import { Difficulty } from "./interfaces";
-
-export interface IMineSweeperGameState {
-  playerGold: number;
-  fieldState: IMineSweeperFieldState;
-  isGameOver: boolean;
-  isPlayerWin: boolean;
-  difficulty?: Difficulty;
-}
+import { MiniGameMachine } from "../../components/MiniGame";
+import { IMineSweeperGameState } from "./interfaces";
+import { boot, startMenu, game, gameOver } from "./logic/screens";
 
 export class MineSweeperGame {
   private stateMachine: MiniGameMachine<IMineSweeperGameState>;
-
-  private components: {
-    mineSweeperGame?: Minesweeper;
-    mineSweeperUI?: MineSweeperUI;
-    startMenu?: StartMenu;
-    gameOver?: GameOver;
-  } = {};
-
-  private updateInterval: Phaser.Time.TimerEvent | null = null;
+  private components: Record<string, any> = {};
 
   constructor(private scene: Phaser.Scene) {
-    const sceneAlign = new Align().anchorSceneScreen(scene);
     this.stateMachine = new MiniGameMachine<IMineSweeperGameState>({
       scene,
       initialData: {
@@ -44,117 +23,29 @@ export class MineSweeperGame {
         }
       },
       boot: async (scene, router) => {
-        await MineSweeperAssetImages.load(scene);
-        router.go(MiniGameState.StartMenu);
+        await boot(scene, router);
       },
       startMenu: async (scene, router) => {
         this.destroyComponents();
-        
-        const startMenu = new StartMenu({
-          scene,
-          onSelectDifficulty: (difficulty: Difficulty) => {
-            router.setData(prevData => ({
-              ...prevData,
-              difficulty
-            }));
-            router.go(MiniGameState.Game);
-          }
-        });
-        scene.add.existing(startMenu);
-        sceneAlign.center(startMenu);
-        this.components.startMenu = startMenu;
+        const components = await startMenu(scene, router);
+        Object.assign(this.components, components);
       },
       game: async (scene, router) => {
         this.destroyComponents();
-        const gameState = router.getData();
-        const difficulty = gameState.difficulty || 'easy';
-        const config = mineSweeperConfig[difficulty];
-        const minesAmount = Math.floor(config.rows * config.columns * config.minesDensity);
-
-        const mineGame = new Minesweeper({
-          scene,
-          cellSize: mineSweeperDisplayConfig.cellSize,
-          columns: config.columns,
-          rows: config.rows,
-          minesAmount,
-          hardLevelMultiplier: config.hardLevelMultiplier,
-          onCellReveal: () => {
-            const newFieldState = mineGame.getFieldState();
-            this.components.mineSweeperUI?.updateState(newFieldState);
-            this.components.mineSweeperUI?.setSmileyState('worried');
-            scene.time.delayedCall(200, () => {
-              this.components.mineSweeperUI?.setSmileyState('normal');
-            });
-          },
-          onGameOver: async (isWin) => {
-            router.setData(prevData => ({
-              ...prevData,
-              isGameOver: true,
-              isPlayerWin: isWin,
-              fieldState: mineGame.getFieldState()
-            }));
-            this.components.mineSweeperUI?.setSmileyState(isWin ? 'cool' : 'dead');
-            router.go(MiniGameState.GameOver);
-          }
-        });
-        scaleToSceneSize(mineGame, mineSweeperDisplayConfig.scaleOfScene);
-        sceneAlign.center(mineGame);
-        scene.add.existing(mineGame);
-        this.components.mineSweeperGame = mineGame;
-
-        const { width: uiWidth } = mineGame.getBounds()
-        const uiHeight = 50;
-        const ui = new MineSweeperUI({
-          scene,
-          width: uiWidth,
-          height: uiHeight,
-          onRestart: () => {
-            router.go(MiniGameState.Game);
-          }
-        });
-        sceneAlign.centerX(ui).topIn(ui);
-        this.components.mineSweeperUI = ui;
-
-        this.updateInterval = scene.time.addEvent({
-          delay: 1000,
-          callback: () => {
-            const fieldState = mineGame.getFieldState();
-            if (fieldState.isGameStarted) {
-              const newFieldState = mineGame.getFieldState();
-              router.setData(prevData => ({
-                ...prevData,
-                fieldState: newFieldState
-              }));
-              this.components.mineSweeperUI?.updateState(newFieldState);
-            }
-          },
-          loop: true
-        });
+        const components = await game(scene, router);
+        Object.assign(this.components, components);
       },
       gameOver: async (scene, router) => {
         this.destroyComponents();
-        const gameState = router.getData();
-
-        const gameOver = new GameOver({
-          scene,
-          isWin: gameState.isPlayerWin,
-          onRestart: () => {
-            router.go(MiniGameState.StartMenu);
-          }
-        });
-        scene.add.existing(gameOver);
-        sceneAlign.center(gameOver);
-        this.components.gameOver = gameOver;
+        const components = await gameOver(scene, router);
+        Object.assign(this.components, components);
       }
     });
   }
 
   destroyComponents() {
-    Object.values(this.components).forEach(object => object?.destroy());
-    if (this.updateInterval !== null) {
-      this.updateInterval.remove();
-      this.updateInterval = null;
-    }
+    Object.values(this.components).forEach(object => object?.destroy?.());
+    this.components = {};
   }
 
   destroy() {

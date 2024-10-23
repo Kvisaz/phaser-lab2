@@ -1,3 +1,5 @@
+import { IMineSweeperFieldState } from "../../components/Minesweeper";
+
 export interface IMineSweeperFieldConfig {
   columns: number;
   rows: number;
@@ -12,3 +14,16 @@ export const MINE_DENSITY = {
 
 export type Difficulty = keyof typeof MINE_DENSITY;
 
+export interface IMineSweeperGameState {
+  playerGold: number;
+  fieldState: IMineSweeperFieldState;
+  isGameOver: boolean;
+  isPlayerWin: boolean;
+  difficulty?: Difficulty;
+}
+
+export interface IGameRouter {
+  getData(): IMineSweeperGameState;
+  setData(updater: (prevData: IMineSweeperGameState) => IMineSweeperGameState): void;
+  go(state: string): void;
+}
