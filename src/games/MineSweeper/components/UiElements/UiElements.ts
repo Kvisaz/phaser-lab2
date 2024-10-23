@@ -21,6 +21,13 @@ export class UiElements {
     });
   }
 
+  textLabel(text: string): GameObject {
+    const { scene } = this.props;
+    const label = Ui.text.mainLight(scene, text);
+    label.setFontSize(32);
+    return label;
+  }
+
   textButton(text: string, onClick?: () => void): GameObject {
     return buttonSimple({
       scene: this.props.scene,
@@ -37,5 +44,9 @@ export class UiElements {
 
   cancelButton(onClick?: () => void): GameObject {
     return this.textButton('Cancel', onClick);
+  }
+
+  restartButton(onClick?: () => void): GameObject {
+    return this.textButton('Restart', onClick);
   }
 }

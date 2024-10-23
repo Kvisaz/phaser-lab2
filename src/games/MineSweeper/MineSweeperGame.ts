@@ -3,7 +3,7 @@ import { MiniGameMachine, MiniGameState } from "../../components/MiniGame";
 import { MineSweeperAssetImages, Minesweeper, IMineSweeperFieldState, MineSweeperUI } from "../../components/Minesweeper";
 import { mineSweeperConfig, mineSweeperDisplayConfig } from "./config";
 import { scaleToSceneSize } from "../../common";
-import { StartMenu } from "./components";
+import { StartMenu, GameOver } from "./components";
 import { Difficulty } from "./interfaces";
 
 export interface IMineSweeperGameState {
@@ -21,6 +21,7 @@ export class MineSweeperGame {
     mineSweeperGame?: Minesweeper;
     mineSweeperUI?: MineSweeperUI;
     startMenu?: StartMenu;
+    gameOver?: GameOver;
   } = {};
 
   private updateInterval: Phaser.Time.TimerEvent | null = null;
@@ -131,15 +132,19 @@ export class MineSweeperGame {
         });
       },
       gameOver: async (scene, router) => {
+        this.destroyComponents();
         const gameState = router.getData();
 
-        if (this.updateInterval !== null) {
-          this.updateInterval.remove();
-          this.updateInterval = null;
-        }
-
-        const finalFieldState = gameState.fieldState;
-        console.log("Final field state:", finalFieldState);
+        const gameOver = new GameOver({
+          scene,
+          isWin: gameState.isPlayerWin,
+          onRestart: () => {
+            router.go(MiniGameState.StartMenu);
+          }
+        });
+        scene.add.existing(gameOver);
+        sceneAlign.center(gameOver);
+        this.components.gameOver = gameOver;
       }
     });
   }
