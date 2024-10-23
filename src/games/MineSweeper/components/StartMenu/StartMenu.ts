@@ -28,11 +28,9 @@ export class StartMenu extends Phaser.GameObjects.Container {
     this.add([bg, easyButton, mediumButton, hardButton]);
 
     new Align(bg)
-      .center(easyButton)
-      .centerX(mediumButton)
-      .centerY(mediumButton, buttonGap)
+      .center(mediumButton)
       .anchor(mediumButton)
-      .centerX(hardButton)
-      .centerY(hardButton, buttonGap);
+      .topTo(easyButton, -buttonGap).centerX(easyButton)
+      .bottomTo(hardButton, buttonGap).centerX(hardButton);
   }
 }

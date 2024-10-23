@@ -133,10 +133,9 @@ new Align(obj1).centerY(obj2)
 Пример - позиционируем кнопки сложности по центру и друг за другом по вертикали
 ```typescript
 // Position buttons using Align chain
-    new Align(easyButton)
-      .centerX(mediumButton)
-      .centerY(mediumButton, buttonGap)
-      .anchor(mediumButton)
-      .centerX(hardButton)
-      .centerY(hardButton, buttonGap);
+new Align(bg) // бэкграунд - объект на вест экран
+  .center(mediumButton) 
+  .anchor(mediumButton)
+  .topTo(easyButton, -buttonGap).centerX(easyButton)
+  .bottomTo(hardButton, buttonGap).centerX(hardButton);
 ```
