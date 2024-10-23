@@ -23,7 +23,6 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
     minesAmount,
     hardLevelMultiplier: config.hardLevelMultiplier,
     onCellReveal: () => {
-      console.log('onCellReveal!');
       if (isDestroyed) return;
       const newFieldState = mineGame.getFieldState();
       ui?.updateState(newFieldState);
@@ -35,7 +34,6 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
       });
     },
     onGameOver: async (isWin) => {
-      console.log('onGameOver!');
       if (isDestroyed) return;
       updateInterval?.remove();
       updateInterval = null;
