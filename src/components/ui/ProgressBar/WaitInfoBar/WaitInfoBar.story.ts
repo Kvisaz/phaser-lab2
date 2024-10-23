@@ -1,5 +1,5 @@
-import { IStory } from "../../../storybook/interfaces";
-import { center, layout, useScene } from "../../../common";
+import { Align } from "@kvisaz/phaser-sugar";
+import { IStory } from "../../../../../storybook/interfaces";
 import { WaitInfoBar } from "./index";
 
 export const waitInfoBarStory: IStory = {
@@ -8,19 +8,15 @@ export const waitInfoBarStory: IStory = {
     const obj = new WaitInfoBar({
       scene,
       durationSec: 5,
-      text: 'Что-то происходит',
+      text: "Что-то происходит",
       isDisabledAutoDestroy: false,
       // textPercentTemplate: '{{1}}%',
       onFinish: () => {
         console.log("test WaitBar finished");
-      },
+      }
     });
-
-    layout(() => {
-      useScene(scene);
-      center(obj);
-    });
+    new Align().anchorSceneScreen(scene).center(obj);
     scene.add.existing(obj);
     return () => obj.destroy();
-  },
+  }
 };

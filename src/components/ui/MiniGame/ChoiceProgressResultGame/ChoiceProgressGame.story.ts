@@ -1,4 +1,4 @@
-import { IStory } from "../../../storybook/interfaces";
+import { IStory } from "../../../../../storybook/interfaces";
 import { ChoiceProgressResultGame } from "./index";
 import { IChoice } from "./interfaces";
 import { IUiMiniGame } from "../interfaces";

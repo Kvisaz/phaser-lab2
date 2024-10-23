@@ -1,5 +1,6 @@
-import { anchor, cssColorToInt, GameObject, layout, leftIn, topIn, useScene } from "../../../common";
-import { UiStyles } from "../../ui/styles";
+import { Align, cssColorToInt } from "@kvisaz/phaser-sugar";
+import { UiStyles } from "../../styles";
+import { GameObject } from "../../../../common";
 
 interface IProps {
   scene: Phaser.Scene;
@@ -51,12 +52,7 @@ export class SimpleProgressBar extends Phaser.GameObjects.Container {
       cssColorToInt(barColor)
     ).setOrigin(0);
 
-    layout(() => {
-      useScene(scene);
-      anchor(bg);
-      leftIn(bar, padding);
-      topIn(bar, padding);
-    });
+    new Align(bg).leftIn(bar, padding).topIn(bar, padding);
     this.add([bg, bar]);
 
     this.bar = bar;

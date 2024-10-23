@@ -1,10 +1,11 @@
-import { DialogOkNo } from "../../Dialog";
-import { IButton } from "../../interfaces";
-import { addToSceneCenter, GameObject, withScene } from "../../../common";
-import { IChoice } from "./interfaces";
-import { addScreenOverlay } from "../../ui";
-import { IUiMiniGame } from "../interfaces";
 import { WaitInfoBar } from "../../ProgressBar/WaitInfoBar";
+import { DialogOkNo } from "../../Dialog";
+import { IUiMiniGame } from "../interfaces";
+import { IChoice } from "./interfaces";
+import { GameObject } from "../../../../common";
+import { addScreenOverlay } from "../../ScreenOverlay";
+import { IButton } from "../../Button";
+import { Align } from "@kvisaz/phaser-sugar";
 
 interface IProps {
   scene: Phaser.Scene;
@@ -36,9 +37,8 @@ export class ChoiceProgressResultGame implements IUiMiniGame {
    * используй onFinish
    */
   run(): void {
-    withScene(this.props.scene, () => {
-      this.overlay = addScreenOverlay();
-    });
+    const { scene } = this.props;
+    this.overlay = addScreenOverlay({ scene });
     this.showChoices()
       .then(() => this.showChoiceReaction())
       .then(() => this.showChoiceResult())
@@ -75,7 +75,7 @@ export class ChoiceProgressResultGame implements IUiMiniGame {
 
   private showChoices(): Promise<void> {
     const { props } = this;
-    const { choices } = props;
+    const { choices, scene } = props;
 
     return new Promise((resolve) => {
       let isCLicked = false;
@@ -98,7 +98,8 @@ export class ChoiceProgressResultGame implements IUiMiniGame {
           onClick: () => onChoiceClick(i),
         })) as [IButton, IButton] | [IButton],
       });
-      addToSceneCenter(props.scene, dialog);
+
+      addToSceneCenter(scene, dialog);
       this.children.push(dialog);
     });
   }
@@ -163,4 +164,10 @@ export class ChoiceProgressResultGame implements IUiMiniGame {
       this.children.push(dialog);
     });
   }
+}
+
+function addToSceneCenter(scene: Phaser.Scene, obj: GameObject) {
+  new Align().anchorSceneScreen(scene).center(obj);
+  scene.add.existing(obj);
+  return obj;
 }

@@ -7,9 +7,12 @@ import { bubbleShooterStory } from "../src/components/BubbleShooter";
 import { bubbleShooterClaudeStory } from "../src/components/BubbleShooterClaude";
 import { mineSweeperGameStory } from "../src/games";
 import { textRectangleStory } from "../src/common/components/TextRectangle/TextRectangle.story";
+import { screenOverlayStory } from "../src/components/ui/ScreenOverlay/ScreenOverlay.story";
 
 export const stories: IStoryListItem[] = Array.from(
   new Set<IStoryListItem>([
+    storyTitle("ui"),
+    screenOverlayStory,
     storyTitle("Mini Games"),
     mineSweeperGameStory,
     storyTitle("Simple Components"),

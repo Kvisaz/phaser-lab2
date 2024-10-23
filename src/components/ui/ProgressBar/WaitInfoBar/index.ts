@@ -1,18 +1,9 @@
+import { Align } from "@kvisaz/phaser-sugar";
+import { UiStyles } from "../../styles";
+import { GameObject, getCanvasSize } from "../../../../common";
+import { background01, Background01Styles } from "../../Background";
+import { Ui } from "../../index";
 import { WaitBar } from "../WaitBar";
-import {
-  anchor,
-  bottomIn,
-  center,
-  centerX,
-  container,
-  GameObject,
-  getCanvasSize,
-  layout,
-  topIn,
-  withScene
-} from "../../../common";
-import { background01, Background01Styles, Ui } from "../../ui";
-import { UiStyles } from "../../ui/styles";
 
 interface IProps {
   scene: Phaser.Scene;
@@ -36,7 +27,7 @@ const padding = UiStyles.window.padding.main;
 export class WaitInfoBar extends Phaser.GameObjects.Container {
   constructor(private props: IProps) {
     super(props.scene);
-    withScene(props.scene, () => this.create());
+    this.create();
   }
 
   /************
@@ -56,13 +47,8 @@ export class WaitInfoBar extends Phaser.GameObjects.Container {
     const info = this.createInfo(infoWidth, infoHeight);
     const waitBar = this.createAndRunWaitBar(barWidth, barHeight);
 
-    layout(() => {
-      anchor(bg);
-      centerX(info);
-      topIn(info, padding);
-      centerX(waitBar);
-      bottomIn(waitBar, -padding);
-    });
+    new Align(bg).centerX(info).topIn(info, padding)
+      .centerX(waitBar).bottomIn(waitBar, -padding);
 
     this.add([bg, info, waitBar]);
   }
@@ -92,13 +78,10 @@ export class WaitInfoBar extends Phaser.GameObjects.Container {
     });
 
     const wrapWidth = width - 30;
-    const textObj = Ui.text.mainLight(text, wrapWidth);
-    layout(() => {
-      anchor(bg);
-      center(textObj);
-    });
+    const textObj = Ui.text.mainLight(scene, text, wrapWidth);
+    new Align(bg).center(textObj);
 
-    return container([bg, textObj]);
+    return new Phaser.GameObjects.Container(scene, 0, 0, [bg, textObj]);
   }
 
   private createAndRunWaitBar(width: number, height: number): GameObject {

@@ -1,5 +1,5 @@
-import { IStory } from "../../../storybook/interfaces";
-import { center, layout, useScene } from "../../../common";
+import { Align } from "@kvisaz/phaser-sugar";
+import { IStory } from "../../../../../storybook/interfaces";
 import { WaitBar } from "./index";
 
 export const waitBarStory: IStory = {
@@ -15,10 +15,7 @@ export const waitBarStory: IStory = {
       },
     });
 
-    layout(() => {
-      useScene(scene);
-      center(obj);
-    });
+    new Align().anchorSceneScreen(scene).center(obj);
     scene.add.existing(obj);
     return () => obj.destroy();
   },

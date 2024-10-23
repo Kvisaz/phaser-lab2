@@ -48,7 +48,7 @@ export function buttonSimple(props: IProps): GameObject {
     bg.setFillStyle(style.bgColor);
   });
 
-  const label = Ui.text.mainLight(props.label);
+  const label = Ui.text.mainLight(scene, props.label);
 
   new Align(bg).center(label);
   container.add([bg, label]);

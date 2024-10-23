@@ -1,5 +1,7 @@
+import { Align } from "@kvisaz/phaser-sugar";
+import { formatString } from "../../../../common";
 import { SimpleProgressBar } from "../SimpleProgressBar";
-import { anchor, center, formatString, layout } from "../../../common";
+
 
 interface IProps {
   scene: Phaser.Scene;
@@ -40,10 +42,7 @@ export class LabelProgressBar extends Phaser.GameObjects.Container {
       };
       const text = formatString(textPercentTemplate, [0]);
       textObject = new Phaser.GameObjects.Text(scene, 0, 0, text, style);
-      layout(() => {
-        anchor(simpleProgressBar);
-        center(textObject!);
-      });
+      new Align(simpleProgressBar).center(textObject);
     }
 
     this.add([simpleProgressBar]);
