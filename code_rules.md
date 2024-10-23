@@ -129,3 +129,14 @@ new Align(obj1).centerY(obj2)
 - rightIn(item: AlignObject, oY = 0): this - объект справа, левая граница объекта должна совпасть с правой границей анкора
 
 Параметр oX, oY - это смещение по соответствующей оси, всегда отсчитывается слева направо или сверху вниз. Параметры опциональны и по умолчанию равны 0.
+
+Пример - позиционируем кнопки сложности по центру и друг за другом по вертикали
+```typescript
+// Position buttons using Align chain
+    new Align(easyButton)
+      .centerX(mediumButton)
+      .centerY(mediumButton, buttonGap)
+      .anchor(mediumButton)
+      .centerX(hardButton)
+      .centerY(hardButton, buttonGap);
+```
