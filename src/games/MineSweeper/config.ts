@@ -5,17 +5,20 @@ export const mineSweeperConfig = {
   easy: {
     rows: 9,
     columns: 9,
-    minesDensity: 0.10
+    minesDensity: 0.10,
+    hardLevelMultiplier: 1
   },
   medium: {
     rows: 16,
     columns: 16,
-    minesDensity: 0.15
+    minesDensity: 0.15,
+    hardLevelMultiplier: 1.2
   },
   hard: {
     rows: 16,
     columns: 30,
-    minesDensity: 0.20
+    minesDensity: 0.20,
+    hardLevelMultiplier: 1.5
   }
 };
 

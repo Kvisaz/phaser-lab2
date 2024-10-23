@@ -1,7 +1,7 @@
 import { Align } from "@kvisaz/phaser-sugar";
 import { MiniGameMachine, MiniGameState } from "../../components/MiniGame";
 import { MineSweeperAssetImages, Minesweeper, IMineSweeperFieldState, MineSweeperUI } from "../../components/Minesweeper";
-import { mineSweeperDisplayConfig } from "./config";
+import { mineSweeperConfig, mineSweeperDisplayConfig } from "./config";
 import { scaleToSceneSize } from "../../common";
 import { StartMenu } from "./components";
 import { Difficulty } from "./interfaces";
@@ -65,13 +65,18 @@ export class MineSweeperGame {
       },
       game: async (scene, router) => {
         this.destroyComponents();
+        const gameState = router.getData();
+        const difficulty = gameState.difficulty || 'easy';
+        const config = mineSweeperConfig[difficulty];
+        const minesAmount = Math.floor(config.rows * config.columns * config.minesDensity);
+
         const mineGame = new Minesweeper({
           scene,
           cellSize: mineSweeperDisplayConfig.cellSize,
-          columns: 10,
-          rows: 10,
-          minesAmount: 10,
-          hardLevelMultiplier: 1,
+          columns: config.columns,
+          rows: config.rows,
+          minesAmount,
+          hardLevelMultiplier: config.hardLevelMultiplier,
           onCellReveal: () => {
             const newFieldState = mineGame.getFieldState();
             this.components.mineSweeperUI?.updateState(newFieldState);

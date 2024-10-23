@@ -11,10 +11,10 @@ import { screenOverlayStory } from "../src/components/ui/ScreenOverlay/ScreenOve
 
 export const stories: IStoryListItem[] = Array.from(
   new Set<IStoryListItem>([
-    storyTitle("ui"),
-    screenOverlayStory,
     storyTitle("Mini Games"),
     mineSweeperGameStory,
+    storyTitle("ui"),
+    screenOverlayStory,
     storyTitle("Simple Components"),
     textRectangleStory,
     storyTitle("Mini Game Machines"),
