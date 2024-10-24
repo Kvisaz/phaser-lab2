@@ -15,7 +15,7 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
 
   let updateInterval: Phaser.Time.TimerEvent | null = null;
   let isDestroyed = false;
-  let isFirstCellRevealed = false;
+  let revealedCellsCount = 0;
 
   const achievements = new Achievements({ scene });
 
@@ -26,7 +26,7 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
     rows: config.rows,
     minesAmount,
     hardLevelMultiplier: config.hardLevelMultiplier,
-    onCellReveal: () => {
+    onCellReveal: ({ isMine }) => {
       if (isDestroyed) return;
       const newFieldState = mineGame.getFieldState();
       ui?.updateState(newFieldState);
@@ -37,9 +37,12 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
         }
       });
 
-      if (!isFirstCellRevealed && !newFieldState.isGameOver) {
-        isFirstCellRevealed = true;
-        achievements.showAchievement({ text: "First step! You're on your way to becoming a Minesweeper pro!" });
+      // Emit cellRevealed event
+      scene.events.emit('cellRevealed', isMine);
+
+      if (!isMine) {
+        revealedCellsCount++;
+        checkAchievements();
       }
     },
     onGameOver: async (isWin) => {
@@ -54,9 +57,25 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
         fieldState: mineGame.getFieldState()
       }));
       ui?.setSmileyState(isWin ? 'cool' : 'dead');
+
+      if (!isWin) {
+        achievements.showAchievement({ text: "Dead man" });
+      }
+
       router.go(MiniGameState.GameOver);
     }
   });
+
+  function checkAchievements() {
+    if (revealedCellsCount === 1) {
+      achievements.showAchievement({ text: "First success!" });
+    } else if (revealedCellsCount === 2) {
+      achievements.showAchievement({ text: "Incredible luck!" });
+    } else if (revealedCellsCount === 3) {
+      achievements.showAchievement({ text: "What a pro!" });
+    }
+  }
+
   scaleToSceneSize(mineGame, mineSweeperDisplayConfig.scaleOfScene);
   sceneAlign.center(mineGame);
   scene.add.existing(mineGame);
