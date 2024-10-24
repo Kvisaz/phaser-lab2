@@ -1,6 +1,9 @@
-import { MineSweeperAssetImages } from "./AssetImages";
 import { Cell } from "./Cell";
 import { IMineSweeperFieldState } from "./interfaces";
+import { createGrid, placeMines } from "./logic/grid";
+import { calculateAdjacentMines } from "./logic/mines";
+import { handleCellClick, handleCellRightClick } from "./logic/gameState";
+import { getFieldState } from "./logic/fieldState";
 
 interface IProps {
   scene: Phaser.Scene;
@@ -9,8 +12,8 @@ interface IProps {
   rows: number;
   minesAmount: number;
   hardLevelMultiplier: number;
-  onCellReveal?: (cell: Cell) => void; // Коллбэк при открытии ячейки
-  onGameOver?: (isWin: boolean) => void; // Коллбэк при завершении игры
+  onCellReveal?: (cell: Cell) => void;
+  onGameOver?: (isWin: boolean) => void;
 }
 
 export class Minesweeper extends Phaser.GameObjects.Container {
@@ -22,15 +25,15 @@ export class Minesweeper extends Phaser.GameObjects.Container {
   private minesAmount: number;
   private flagsLeft: number;
 
-  private isGameOver: boolean = false;
-  private startTime: number = 0;
   private fieldState: IMineSweeperFieldState = {
     time: 0,
     openedCells: 0,
     flaggedMines: 0,
     incorrectFlags: 0,
     multiplier: 1,
-    isGameStarted: false
+    isGameStarted: false,
+    isGameOver: false,
+    startTime: 0
   };
 
   constructor(private props: IProps) {
@@ -51,235 +54,47 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     this.minesAmount = minesAmount;
     this.flagsLeft = minesAmount;
 
-    this.grid = [];
-    this.freeCells = [];
-    this.createGrid();
-    this.placeMines();
-    this.calculateAdjacentMines();
+    const { grid, freeCells } = createGrid(
+      scene,
+      rows,
+      columns,
+      cellSize,
+      this.handleCellClick.bind(this),
+      this.handleCellRightClick.bind(this)
+    );
 
+    this.grid = grid;
+    this.freeCells = freeCells;
+
+    placeMines(this.freeCells, this.minesAmount);
+    calculateAdjacentMines(this.grid, this.rows, this.columns);
+
+    grid.forEach(row => row.forEach(cell => this.add(cell)));
     scene.add.existing(this);
   }
 
-  private createGrid() {
-    for (let row = 0; row < this.rows; row++) {
-      this.grid[row] = [];
-      for (let col = 0; col < this.columns; col++) {
-        const cell = new Cell({
-          scene: this.scene,
-          x: col * this.cellSize,
-          y: row * this.cellSize,
-          size: this.cellSize,
-          row,
-          col,
-          onClick: this.handleCellClick.bind(this),
-          onRightClick: this.handleCellRightClick.bind(this)
-        });
-        this.grid[row][col] = cell;
-        this.freeCells.push(cell);
-        this.add(cell);
-      }
-    }
+  private handleCellClick(cell: Cell): void {
+    handleCellClick(
+      cell,
+      this.fieldState,
+      this.grid,
+      this.rows,
+      this.columns,
+      this.freeCells,
+      this.props.onCellReveal,
+      this.props.onGameOver
+    );
   }
 
-  private placeMines(excludeCell?: Cell) {
-    if (this.minesAmount >= this.freeCells.length) {
-      console.warn("Warning: All cells are filled with mines!");
-      this.minesAmount = this.freeCells.length - 1;
-      this.flagsLeft = this.minesAmount;
-    }
-
-    for (let i = 0; i < this.minesAmount; i++) {
-      if (this.freeCells.length === 0) break;
-
-      const randomIndex = Phaser.Math.Between(0, this.freeCells.length - 1);
-      const cell = this.freeCells[randomIndex];
-
-      if (cell.isMine) {
-        console.warn("cell.isMine in free cells array");
-        this.removeCellFromFree(cell);
-        i--;
-        continue;
-      }
-
-      if (!excludeCell || cell !== excludeCell) {
-        cell.isMine = true;
-        this.removeCellFromFree(cell);
-      } else {
-        i--; // Try again if we hit the excluded cell
-      }
-    }
-  }
-
-  private removeCellFromFree(cell: Cell) {
-    const index = this.freeCells.indexOf(cell);
-    if (index !== -1) {
-      this.freeCells.splice(index, 1);
-    }
-  }
-
-  private calculateAdjacentMines() {
-    for (let row = 0; row < this.rows; row++) {
-      for (let col = 0; col < this.columns; col++) {
-        const cell = this.grid[row][col];
-        if (!cell.isMine) {
-          let minesCount = 0;
-          this.getNeighbors(cell).forEach((neighbor) => {
-            if (neighbor.isMine) minesCount++;
-          });
-          cell.adjacentMines = minesCount;
-        }
-      }
-    }
-  }
-
-  private getNeighbors(cell: Cell): Cell[] {
-    const neighbors: Cell[] = [];
-    for (let y = -1; y <= 1; y++) {
-      for (let x = -1; x <= 1; x++) {
-        const row = cell.row + y;
-        const col = cell.col + x;
-        if (
-          row >= 0 &&
-          row < this.rows &&
-          col >= 0 &&
-          col < this.columns &&
-          !(x === 0 && y === 0)
-        ) {
-          neighbors.push(this.grid[row][col]);
-        }
-      }
-    }
-    return neighbors;
-  }
-
-  private handleCellClick(cell: Cell) {
-    if (this.isGameOver || cell.isRevealed || cell.isFlagged) return;
-
-    if (this.fieldState.isGameStarted !== true) {
-      this.ensureSafeFirstClick(cell);
-      this.startTime = Date.now();
-      this.fieldState.isGameStarted = true;
-    }
-
-    cell.reveal();
-    this.fieldState.openedCells++;
-
-    this.props.onCellReveal?.(cell);
-
-    if (cell.isMine) {
-      this.gameOver(false);
-    } else if (cell.adjacentMines === 0) {
-      this.revealAdjacentCells(cell);
-    }
-
-    if (this.checkWinCondition()) {
-      this.gameOver(true);
-    }
-
-    this.updateFieldState();
-  }
-
-  private ensureSafeFirstClick(cell: Cell) {
-    if (cell.isMine) {
-      cell.isMine = false;
-      this.moveMine(cell);
-    }
-    this.calculateAdjacentMines();
-  }
-
-  private moveMine(excludeCell: Cell) {
-    const freeCellsWithoutExcluded = this.freeCells.filter(cell => cell !== excludeCell);
-
-    if (freeCellsWithoutExcluded.length === 0) {
-      console.warn("Warning: Cannot move mine, all cells are occupied!");
-      this.minesAmount--;
-      this.flagsLeft--;
-      return;
-    }
-
-    const randomIndex = Phaser.Math.Between(0, freeCellsWithoutExcluded.length - 1);
-    const newMineCell = freeCellsWithoutExcluded[randomIndex];
-    newMineCell.isMine = true;
-
-    // Remove the new mine cell from freeCells
-    this.removeCellFromFree(newMineCell);
-
-    // Add the previously excluded cell back to freeCells if it's not already there
-    if (!this.freeCells.includes(excludeCell)) {
-      this.freeCells.push(excludeCell);
-    }
-  }
-
-  private handleCellRightClick(cell: Cell) {
-    if (this.isGameOver || cell.isRevealed) return;
-
-    cell.toggleFlag();
-    this.flagsLeft += cell.isFlagged ? -1 : 1;
-
-    if (cell.isFlagged) {
-      this.fieldState.flaggedMines++;
-      if (!cell.isMine) {
-        this.fieldState.incorrectFlags++;
-      }
-    } else {
-      this.fieldState.flaggedMines--;
-      if (!cell.isMine) {
-        this.fieldState.incorrectFlags--;
-      }
-    }
-
-    this.props.onCellReveal?.(cell);
-    this.updateFieldState();
-  }
-
-  private revealAdjacentCells(cell: Cell) {
-    this.getNeighbors(cell).forEach((neighbor) => {
-      if (!neighbor.isRevealed && !neighbor.isFlagged) {
-        neighbor.reveal();
-        this.fieldState.openedCells++;
-        if (neighbor.adjacentMines === 0) {
-          this.revealAdjacentCells(neighbor);
-        }
-      }
-    });
-  }
-
-  private checkWinCondition(): boolean {
-    for (let row = 0; row < this.rows; row++) {
-      for (let col = 0; col < this.columns; col++) {
-        const cell = this.grid[row][col];
-        if (!cell.isMine && !cell.isRevealed) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  private gameOver(isWin: boolean) {
-    this.isGameOver = true;
-    this.props.scene.time.delayedCall(350, () => {
-      if (!isWin) {
-        // Открыть все мины
-        this.grid.forEach((row) => {
-          row.forEach((cell) => {
-            if (cell.isMine) {
-              cell.reveal();
-            }
-          });
-        });
-      }
-      this.props.onGameOver?.(isWin);
-    });
-  }
-
-  private updateFieldState() {
-    if (this.fieldState.isGameStarted !== true) return;
-    this.fieldState.time = Math.floor((Date.now() - this.startTime) / 1000);
+  private handleCellRightClick(cell: Cell): void {
+    handleCellRightClick(
+      cell,
+      this.fieldState,
+      this.props.onCellReveal
+    );
   }
 
   public getFieldState(): IMineSweeperFieldState {
-    this.updateFieldState();
-    return { ...this.fieldState };
+    return getFieldState(this.fieldState);
   }
 }

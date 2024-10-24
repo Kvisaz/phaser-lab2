@@ -5,4 +5,6 @@ export interface IMineSweeperFieldState {
   incorrectFlags: number;
   multiplier: number;
   isGameStarted: boolean;
+  isGameOver: boolean;
+  startTime: number;
 }
