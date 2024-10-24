@@ -15,7 +15,6 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
 
   let updateInterval: Phaser.Time.TimerEvent | null = null;
   let isDestroyed = false;
-  let revealedCellsCount = 0;
 
   const achievements = new Achievements({ scene });
 
@@ -26,7 +25,7 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
     rows: config.rows,
     minesAmount,
     hardLevelMultiplier: config.hardLevelMultiplier,
-    onCellReveal: ({ isMine }) => {
+    onCellReveal: (cell) => {
       if (isDestroyed) return;
       const newFieldState = mineGame.getFieldState();
       ui?.updateState(newFieldState);
@@ -36,45 +35,30 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
           ui?.setSmileyState('normal');
         }
       });
-
-      // Emit cellRevealed event
-      scene.events.emit('cellRevealed', isMine);
-
-      if (!isMine) {
-        revealedCellsCount++;
-        checkAchievements();
-      }
+      achievements.checkRevealed(newFieldState);
     },
     onGameOver: async (isWin) => {
       if (isDestroyed) return;
       updateInterval?.remove();
       updateInterval = null;
 
+      const fieldState = mineGame.getFieldState();
+
       router.setData(prevData => ({
         ...prevData,
         isGameOver: true,
         isPlayerWin: isWin,
-        fieldState: mineGame.getFieldState()
+        fieldState
       }));
       ui?.setSmileyState(isWin ? 'cool' : 'dead');
 
       if (!isWin) {
-        achievements.showAchievement({ text: "Dead man" });
+        achievements.checkGameOver(fieldState);
       }
 
       router.go(MiniGameState.GameOver);
     }
   });
-
-  function checkAchievements() {
-    if (revealedCellsCount === 1) {
-      achievements.showAchievement({ text: "First success!" });
-    } else if (revealedCellsCount === 2) {
-      achievements.showAchievement({ text: "Incredible luck!" });
-    } else if (revealedCellsCount === 3) {
-      achievements.showAchievement({ text: "What a pro!" });
-    }
-  }
 
   scaleToSceneSize(mineGame, mineSweeperDisplayConfig.scaleOfScene);
   sceneAlign.center(mineGame);

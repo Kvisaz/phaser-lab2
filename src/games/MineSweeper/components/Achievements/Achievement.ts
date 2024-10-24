@@ -40,7 +40,7 @@ export class Achievement extends Phaser.GameObjects.Container {
     new Align().anchorSceneScreen(scene).leftTo(this, -128);
   }
 
-  showAndHide(): void {
+  showAndHide(onHide: ()=>void): void {
     const { scene } = this.props;
     const { height } = this.getBounds();
     new Align().anchorSceneScreen(scene)
@@ -67,6 +67,7 @@ export class Achievement extends Phaser.GameObjects.Container {
         duration: 500,
         onComplete: () => {
           this.destroy();
+          onHide();
         }
       });
     });
