@@ -4,6 +4,7 @@ import { Minesweeper, MineSweeperUI } from "../../../../components/Minesweeper";
 import { mineSweeperConfig, mineSweeperDisplayConfig } from "../../config";
 import { scaleToSceneSize } from "../../../../common";
 import { Difficulty, IGameRouter } from "../../interfaces";
+import { Achievements } from "../../components";
 
 export async function game(scene: Phaser.Scene, router: IGameRouter) {
   const sceneAlign = new Align().anchorSceneScreen(scene);
@@ -14,6 +15,9 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
 
   let updateInterval: Phaser.Time.TimerEvent | null = null;
   let isDestroyed = false;
+  let isFirstCellRevealed = false;
+
+  const achievements = new Achievements({ scene });
 
   const mineGame = new Minesweeper({
     scene,
@@ -32,6 +36,11 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
           ui?.setSmileyState('normal');
         }
       });
+
+      if (!isFirstCellRevealed && !newFieldState.isGameOver) {
+        isFirstCellRevealed = true;
+        achievements.showAchievement({ text: "First step! You're on your way to becoming a Minesweeper pro!" });
+      }
     },
     onGameOver: async (isWin) => {
       if (isDestroyed) return;
@@ -89,6 +98,7 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
   return {
     mineGame,
     ui,
+    achievements,
     destroy: () => {
       console.log('destroy game')
       isDestroyed = true;
@@ -96,6 +106,7 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
       updateInterval = null;
       mineGame.destroy();
       ui.destroy();
+      achievements.destroy();
     }
   };
 }
