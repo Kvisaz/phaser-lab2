@@ -7,4 +7,5 @@ export interface IMineSweeperFieldState {
   isGameStarted: boolean;
   isGameOver: boolean;
   startTime: number;
+  totalMines: number;
 }

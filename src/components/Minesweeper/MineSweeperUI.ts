@@ -10,7 +10,9 @@ interface IMineSweeperUIProps {
 
 export class MineSweeperUI extends Phaser.GameObjects.Container {
   private timeText: Phaser.GameObjects.Text;
-  private flagsText: Phaser.GameObjects.Text;
+  private timeLabel: Phaser.GameObjects.Text;
+  private minesText: Phaser.GameObjects.Text;
+  private minesLabel: Phaser.GameObjects.Text;
   private smileyButton: Phaser.GameObjects.Sprite;
 
   constructor(props: IMineSweeperUIProps) {
@@ -24,16 +26,17 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
     this.add(background);
 
     const textStyle: Partial<Phaser.GameObjects.TextStyle> = { fontSize: "24px", color: "#FF0000" };
+    const labelStyle: Partial<Phaser.GameObjects.TextStyle> = { fontSize: "20px", color: "#000000" };
 
-    // Flags display
-    this.flagsText = this.scene.add.text(width / 2 - 10, 0, "000", textStyle);
-    this.flagsText.setOrigin(1, 0);
-    this.add(this.flagsText);
+    // Time display (right side)
+    this.timeLabel = this.scene.add.text(0, 0, "time:", labelStyle);
+    this.timeText = this.scene.add.text(0, 0, "000", textStyle);
+    this.add([this.timeLabel, this.timeText]);
 
-    // Time display
-    this.timeText = this.scene.add.text(-width / 2 + 10, 0, "000", textStyle);
-    this.timeText.setOrigin(0, 1);
-    this.add(this.timeText);
+    // Mines display (left side)
+    this.minesLabel = this.scene.add.text(0, 0, "mines:", labelStyle);
+    this.minesText = this.scene.add.text(0, 0, "000", textStyle);
+    this.add([this.minesLabel, this.minesText]);
 
     // Smiley button
     this.smileyButton = this.scene.add.sprite(0, 0, "minesweeper_atlas", "smiley_normal.png");
@@ -43,7 +46,9 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
 
     const padding = 0.02 * width;
     align.anchor(background)
-      .centerY(this.flagsText).leftIn(this.flagsText, padding)
+      .centerY(this.minesLabel).leftIn(this.minesLabel, padding)
+      .centerY(this.minesText).leftIn(this.minesText, padding + this.minesLabel.width + 5)
+      .centerY(this.timeLabel).rightIn(this.timeLabel, -padding - 50)
       .centerY(this.timeText).rightIn(this.timeText, -padding)
       .centerX(this.smileyButton);
 
@@ -52,7 +57,8 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
 
   updateState(state: IMineSweeperFieldState) {
     this.timeText.setText(state.isGameStarted ? state.time.toString().padStart(3, "0") : "000");
-    this.flagsText.setText(state.flaggedMines.toString().padStart(3, "0"));
+    const remainingMines = state.totalMines - state.flaggedMines;
+    this.minesText.setText(remainingMines.toString().padStart(3, "0"));
   }
 
   setSmileyState(state: "normal" | "worried" | "cool" | "dead") {

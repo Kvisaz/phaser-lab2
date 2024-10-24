@@ -31,7 +31,8 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     multiplier: 1,
     isGameStarted: false,
     isGameOver: false,
-    startTime: 0
+    startTime: 0,
+    totalMines: 0
   };
 
   constructor(private props: IProps) {
@@ -48,6 +49,7 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     } = props;
 
     this.fieldState.multiplier = hardLevelMultiplier;
+    this.fieldState.totalMines = minesAmount;
 
     // Using arrow functions to avoid bind(this)
     const onCellClickHandler = (cell: Cell) => 
