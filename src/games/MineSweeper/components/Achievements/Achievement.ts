@@ -40,7 +40,7 @@ export class Achievement extends Phaser.GameObjects.Container {
     new Align().anchorSceneScreen(scene).leftTo(this, -128);
   }
 
-  showAndHide(onHide: ()=>void): void {
+  showAndHide(onHide: ()=>void, targetY?: number): void {
     const { scene } = this.props;
     const { height } = this.getBounds();
     new Align().anchorSceneScreen(scene)
@@ -49,10 +49,10 @@ export class Achievement extends Phaser.GameObjects.Container {
 
     const canvasSize = getCanvasSize(scene);
     scene.add.existing(this);
-
+    targetY = targetY ?? canvasSize.height - height - 64;
     scene.tweens.add({
       targets: this,
-      y: canvasSize.height - height - 64,
+      y: targetY,
       alpha: 1,
       ease: "Power2",
       duration: 500

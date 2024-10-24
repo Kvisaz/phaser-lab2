@@ -9,7 +9,7 @@ import { Achievements } from "../../components";
 export async function game(scene: Phaser.Scene, router: IGameRouter) {
   const sceneAlign = new Align().anchorSceneScreen(scene);
   const gameState = router.getData();
-  const difficulty = gameState.difficulty || 'easy';
+  const difficulty = gameState.difficulty || "easy";
   const config = mineSweeperConfig[difficulty as Difficulty];
   const minesAmount = Math.floor(config.rows * config.columns * config.minesDensity);
 
@@ -29,10 +29,10 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
       if (isDestroyed) return;
       const newFieldState = mineGame.getFieldState();
       ui?.updateState(newFieldState);
-      ui?.setSmileyState('worried');
+      ui?.setSmileyState("worried");
       scene.time.delayedCall(200, () => {
         if (!isDestroyed) {
-          ui?.setSmileyState('normal');
+          ui?.setSmileyState("normal");
         }
       });
       achievements.checkRevealed(newFieldState);
@@ -50,7 +50,7 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
         isPlayerWin: isWin,
         fieldState
       }));
-      ui?.setSmileyState(isWin ? 'cool' : 'dead');
+      ui?.setSmileyState(isWin ? "cool" : "dead");
 
       if (!isWin) {
         achievements.checkGameOver(fieldState);
@@ -64,7 +64,7 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
   sceneAlign.center(mineGame);
   scene.add.existing(mineGame);
 
-  const { width: uiWidth } = mineGame.getBounds()
+  const { width: uiWidth } = mineGame.getBounds();
   const uiHeight = 50;
   const ui = new MineSweeperUI({
     scene,
@@ -99,17 +99,16 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
   });
 
   return {
-    mineGame,
-    ui,
-    achievements,
-    destroy: () => {
-      console.log('destroy game')
-      isDestroyed = true;
-      updateInterval?.remove();
-      updateInterval = null;
-      mineGame.destroy();
-      ui.destroy();
-      achievements.destroy();
+    gameAll: {
+      destroy: () => {
+        console.log("destroy game");
+        isDestroyed = true;
+        updateInterval?.destroy();
+        updateInterval = null;
+        mineGame.destroy();
+        ui.destroy();
+        achievements.destroy();
+      }
     }
   };
 }
