@@ -139,3 +139,16 @@ new Align(bg) // бэкграунд - объект на вест экран
   .topTo(easyButton, -buttonGap).centerX(easyButton)
   .bottomTo(hardButton, buttonGap).centerX(hardButton);
 ```
+
+## Экспорт из папки через index.ts
+Если мы собираем файлы в папку, создавай index.ts в ней, который экспортирует модули из файлов через *
+
+Это позволит компактно писать импорты таких файлов.
+
+Пример:
+```typescript
+export * from './grid';
+export * from './mines';
+export * from './gameState';
+export * from './fieldState';
+```
