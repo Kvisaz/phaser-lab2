@@ -16,7 +16,7 @@ export type Difficulty = keyof typeof MINE_DENSITY;
 
 export interface IMineSweeperGameState {
   playerGold: number;
-  fieldState: IMineSweeperFieldState;
+  fieldState?: IMineSweeperFieldState;
   isGameOver: boolean;
   isPlayerWin: boolean;
   difficulty?: Difficulty;

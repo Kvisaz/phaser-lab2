@@ -13,14 +13,6 @@ export class MineSweeperGame {
         playerGold: 2,
         isGameOver: false,
         isPlayerWin: false,
-        fieldState: {
-          time: 0,
-          openedCells: 0,
-          flaggedMines: 0,
-          incorrectFlags: 0,
-          multiplier: 1,
-          isGameStarted: false,
-        }
       },
       boot: async (scene, router) => {
         await boot(scene, router);

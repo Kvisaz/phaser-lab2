@@ -67,6 +67,8 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
   });
   sceneAlign.centerX(ui).topIn(ui);
 
+  ui?.updateState(mineGame.getFieldState());
+
   updateInterval = scene.time.addEvent({
     delay: 1000,
     callback: () => {
