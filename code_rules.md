@@ -45,6 +45,7 @@ interface IProps {
 }
 
 export class MyComponent extends Phaser.GameObjects.Container {
+  // всегда пиши private props в конструкторе для экономии места!
   constructor(private props: IProps) {
     super(props.scene);
     const { scene, text } = props;

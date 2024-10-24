@@ -1,3 +1,4 @@
-export { StartMenu } from './StartMenu';
-export { GameOver } from './GameOver';
-export { UiElements } from './UiElements';
+export * from './StartMenu';
+export * from './GameOver';
+export * from './UiElements';
+export * from './Achievements';
