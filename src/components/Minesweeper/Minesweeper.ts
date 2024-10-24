@@ -1,9 +1,13 @@
 import { Cell } from "./Cell";
 import { IMineSweeperFieldState } from "./interfaces";
-import { createGrid, placeMines } from "./logic/grid";
-import { calculateAdjacentMines } from "./logic/mines";
-import { handleCellClick, handleCellRightClick } from "./logic/gameState";
-import { getFieldState } from "./logic/fieldState";
+import {
+  createGrid,
+  placeMines,
+  calculateAdjacentMines,
+  handleCellClick,
+  handleCellRightClick,
+  getFieldState
+} from "./logic";
 
 interface IProps {
   scene: Phaser.Scene;
