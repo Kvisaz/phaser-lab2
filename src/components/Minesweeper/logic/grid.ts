@@ -5,8 +5,8 @@ export function createGrid(
   rows: number,
   columns: number,
   cellSize: number,
-  handleCellClick: (cell: Cell) => void,
-  handleCellRightClick: (cell: Cell) => void
+  onCellClick: (cell: Cell) => void,
+  onCellRightClick: (cell: Cell) => void
 ): { grid: Cell[][], freeCells: Cell[] } {
   const grid: Cell[][] = [];
   const freeCells: Cell[] = [];
@@ -21,8 +21,8 @@ export function createGrid(
         size: cellSize,
         row,
         col,
-        onClick: handleCellClick,
-        onRightClick: handleCellRightClick
+        onClick: onCellClick,
+        onRightClick: onCellRightClick
       });
       grid[row][col] = cell;
       freeCells.push(cell);
