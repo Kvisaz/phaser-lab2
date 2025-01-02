@@ -1,5 +1,5 @@
-import { IMineSweeperFieldState } from "./interfaces";
 import { Align } from "@kvisaz/phaser-sugar";
+import { IMineSweeperFieldState, UiSmileState } from "./interfaces";
 
 interface IMineSweeperUIProps {
   scene: Phaser.Scene;
@@ -61,7 +61,7 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
     this.minesText.setText(remainingMines.toString().padStart(3, "0"));
   }
 
-  setSmileyState(state: "normal" | "worried" | "cool" | "dead") {
+  setSmileyState(state: UiSmileState) {
     this.smileyButton.setFrame(`smiley_${state}.png`);
   }
 }

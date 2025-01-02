@@ -9,3 +9,5 @@ export interface IMineSweeperFieldState {
   startTime: number;
   totalMines: number;
 }
+
+export type UiSmileState = "normal" | "worried" | "cool" | "dead";
