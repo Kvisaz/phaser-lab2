@@ -16,6 +16,7 @@ interface IProps {
   rows: number;
   minesAmount: number;
   hardLevelMultiplier: number;
+  onCellDown?: (cell: Cell) => void;
   onCellReveal?: (cell: Cell) => void;
   onGameOver?: (isWin: boolean) => void;
 }
@@ -44,6 +45,7 @@ export class Minesweeper extends Phaser.GameObjects.Container {
       rows,
       minesAmount,
       hardLevelMultiplier,
+      onCellDown,
       onCellReveal,
       onGameOver
     } = props;
@@ -52,7 +54,7 @@ export class Minesweeper extends Phaser.GameObjects.Container {
     this.fieldState.totalMines = minesAmount;
 
     // Using arrow functions to avoid bind(this)
-    const onCellClickHandler = (cell: Cell) => 
+    const onCellClickHandler = (cell: Cell) =>
       handleCellClick(
         cell,
         this.fieldState,
@@ -64,7 +66,7 @@ export class Minesweeper extends Phaser.GameObjects.Container {
         onGameOver
       );
 
-    const onCellRightClickHandler = (cell: Cell) => 
+    const onCellRightClickHandler = (cell: Cell) =>
       handleCellRightClick(
         cell,
         this.fieldState,
@@ -76,6 +78,7 @@ export class Minesweeper extends Phaser.GameObjects.Container {
       rows,
       columns,
       cellSize,
+      (cell)=> { onCellDown?.(cell)},
       onCellClickHandler,
       onCellRightClickHandler
     );

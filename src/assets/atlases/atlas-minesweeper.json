@@ -1,0 +1,208 @@
+{
+	"textures": [
+		{
+			"image": "atlas-minesweeper",
+			"format": "RGBA8888",
+			"size": {
+				"w": 402,
+				"h": 402
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "cell_base.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 128,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 128,
+						"h": 128
+					},
+					"frame": {
+						"x": 3,
+						"y": 3,
+						"w": 128,
+						"h": 128
+					}
+				},
+				{
+					"filename": "cell_closed.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 128,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 128,
+						"h": 128
+					},
+					"frame": {
+						"x": 137,
+						"y": 3,
+						"w": 128,
+						"h": 128
+					}
+				},
+				{
+					"filename": "cell_flagged.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 128,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 128,
+						"h": 128
+					},
+					"frame": {
+						"x": 3,
+						"y": 137,
+						"w": 128,
+						"h": 128
+					}
+				},
+				{
+					"filename": "cell_mine.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 128,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 128,
+						"h": 128
+					},
+					"frame": {
+						"x": 137,
+						"y": 137,
+						"w": 128,
+						"h": 128
+					}
+				},
+				{
+					"filename": "smile_cool.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 128,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 128,
+						"h": 128
+					},
+					"frame": {
+						"x": 271,
+						"y": 3,
+						"w": 128,
+						"h": 128
+					}
+				},
+				{
+					"filename": "smile_dead.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 128,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 128,
+						"h": 128
+					},
+					"frame": {
+						"x": 271,
+						"y": 137,
+						"w": 128,
+						"h": 128
+					}
+				},
+				{
+					"filename": "smile_normal.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 128,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 128,
+						"h": 128
+					},
+					"frame": {
+						"x": 3,
+						"y": 271,
+						"w": 128,
+						"h": 128
+					}
+				},
+				{
+					"filename": "smile_sad.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 128,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 128,
+						"h": 128
+					},
+					"frame": {
+						"x": 137,
+						"y": 271,
+						"w": 128,
+						"h": 128
+					}
+				},
+				{
+					"filename": "smiley_worried.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 128,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 128,
+						"h": 128
+					},
+					"frame": {
+						"x": 271,
+						"y": 271,
+						"w": 128,
+						"h": 128
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "http://free-tex-packer.com",
+		"version": "0.6.7"
+	}
+}

@@ -1,4 +1,4 @@
-import { Align } from "@kvisaz/phaser-sugar";
+import { Align, delay } from "@kvisaz/phaser-sugar";
 import { MiniGameState } from "../../../../components/MiniGame";
 import { Minesweeper, MineSweeperUI } from "../../../../components/Minesweeper";
 import { mineSweeperConfig, mineSweeperDisplayConfig } from "../../config";
@@ -26,6 +26,7 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
     minesAmount,
     hardLevelMultiplier: config.hardLevelMultiplier,
     onCellReveal: (cell) => {
+      console.log('onCellReveal')
       if (isDestroyed) return;
       const newFieldState = mineGame.getFieldState();
       ui?.updateState(newFieldState);
@@ -38,6 +39,7 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
       achievements.checkRevealed(newFieldState);
     },
     onGameOver: async (isWin) => {
+      console.log('onGameOver')
       if (isDestroyed) return;
       updateInterval?.remove();
       updateInterval = null;
@@ -56,6 +58,7 @@ export async function game(scene: Phaser.Scene, router: IGameRouter) {
         achievements.checkGameOver(fieldState);
       }
 
+      await delay(mineSweeperDisplayConfig.gameOverDelay);
       router.go(MiniGameState.GameOver);
     }
   });

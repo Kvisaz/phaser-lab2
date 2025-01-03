@@ -7,6 +7,7 @@ interface CellProps {
   size: number;
   row: number;
   col: number;
+  onCellDown: (cell: Cell) => void;
   onClick: (cell: Cell) => void;
   onRightClick: (cell: Cell) => void;
 }
@@ -25,11 +26,9 @@ export class Cell extends Phaser.GameObjects.Container {
   private mineImage: Phaser.GameObjects.Image;
   private inputRect: Phaser.GameObjects.Rectangle;
   private text: Phaser.GameObjects.Text;
-  private onClick: (cell: Cell) => void;
-  private onRightClick: (cell: Cell) => void;
   private pressTimer: NodeJS.Timeout | null = null;
 
-  constructor(props: CellProps) {
+  constructor(private props: CellProps) {
     super(props.scene, props.x, props.y);
     const {
       scene,
@@ -37,15 +36,11 @@ export class Cell extends Phaser.GameObjects.Container {
       y,
       size,
       row,
-      col,
-      onClick,
-      onRightClick
+      col
     } = props;
 
     this.row = row;
     this.col = col;
-    this.onClick = onClick;
-    this.onRightClick = onRightClick;
 
     // Create all image variants
     this.unrevealedImage = MineSweeperAssetImages.cell(scene).setDisplaySize(size, size);
@@ -58,8 +53,9 @@ export class Cell extends Phaser.GameObjects.Container {
     // Set up interactivity
     this.inputRect.setInteractive()
       .on("pointerdown", () => {
+        this.props.onCellDown(this);
         this.pressTimer = setTimeout(() => {
-          this.onRightClick(this);
+          this.props.onRightClick(this);
           this.pressTimer = null;
         }, 500); // 500 мс для долгого нажатия
       })
@@ -67,7 +63,7 @@ export class Cell extends Phaser.GameObjects.Container {
         if (this.pressTimer) {
           clearTimeout(this.pressTimer);
           this.pressTimer = null;
-          this.onClick(this);
+          this.props.onClick(this);
         }
       })
       .on("pointerout", () => {

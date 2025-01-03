@@ -1,5 +1,6 @@
 import { Align } from "@kvisaz/phaser-sugar";
 import { IMineSweeperFieldState, UiSmileState } from "./interfaces";
+import { MineSweeperAssetImages, UiSmiley } from "./AssetImages";
 
 interface IMineSweeperUIProps {
   scene: Phaser.Scene;
@@ -13,13 +14,13 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
   private timeLabel: Phaser.GameObjects.Text;
   private minesText: Phaser.GameObjects.Text;
   private minesLabel: Phaser.GameObjects.Text;
-  private smileyButton: Phaser.GameObjects.Sprite;
+  private smileyButton: UiSmiley;
 
   constructor(props: IMineSweeperUIProps) {
     super(props.scene);
 
     const align = new Align();
-    const { width, height, onRestart } = props;
+    const { width, height, onRestart, scene } = props;
 
     // Background
     const background = this.scene.add.rectangle(0, 0, width, height, 0xCCCCCC);
@@ -39,9 +40,11 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
     this.add([this.minesLabel, this.minesText]);
 
     // Smiley button
-    this.smileyButton = this.scene.add.sprite(0, 0, "minesweeper_atlas", "smiley_normal.png");
+    this.smileyButton = MineSweeperAssetImages.smiley(scene);
     this.smileyButton.setInteractive();
     this.smileyButton.on("pointerdown", onRestart);
+
+    console.log('this.smileyButton', this.smileyButton);
     this.add(this.smileyButton);
 
     const padding = 0.02 * width;
@@ -62,6 +65,6 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
   }
 
   setSmileyState(state: UiSmileState) {
-    this.smileyButton.setFrame(`smiley_${state}.png`);
+    this.smileyButton.setTextureState(state);
   }
 }

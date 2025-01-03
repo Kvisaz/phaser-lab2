@@ -5,6 +5,7 @@ export function createGrid(
   rows: number,
   columns: number,
   cellSize: number,
+  onCellDown: (cell: Cell) => void,
   onCellClick: (cell: Cell) => void,
   onCellRightClick: (cell: Cell) => void
 ): { grid: Cell[][], freeCells: Cell[] } {
@@ -21,6 +22,7 @@ export function createGrid(
         size: cellSize,
         row,
         col,
+        onCellDown,
         onClick: onCellClick,
         onRightClick: onCellRightClick
       });
