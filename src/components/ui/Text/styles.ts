@@ -1,7 +1,7 @@
 import { INiceTextStyle } from "../../../common";
 
 const main: INiceTextStyle = {
-  fontFamily: 'Verdana, Roboto, sans-serif',
+  fontFamily: 'Title, Verdana, Roboto, sans-serif',
   fontSize: '20px',
   lineHeight: 1.3,
   align: 'center'

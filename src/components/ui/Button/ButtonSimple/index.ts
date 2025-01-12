@@ -1,7 +1,7 @@
+import { Align } from "@kvisaz/phaser-sugar";
 import { cssColorToInt, GameObject, onClick, onOut, onOver } from "../../../../common";
 import { background01, Background01Styles } from "../../Background";
 import { Ui } from "../../index";
-import { Align } from "@kvisaz/phaser-sugar";
 
 interface IProps {
   scene: Phaser.Scene;
