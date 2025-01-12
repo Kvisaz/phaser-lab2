@@ -8,7 +8,7 @@ export const MineSweeperFonts = {
   load(scene: Phaser.Scene): void {
 
     loadFont({
-      scene, fontFamily: "Title", url: `${urlBase}/BalsamiqSans-Bold.ttf`
+      scene, fontFamily: "Title", url: `${urlBase}/BalsamiqSans-Bold.woff2`
     });
 
     loadFont({
