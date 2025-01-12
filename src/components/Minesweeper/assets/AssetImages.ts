@@ -1,4 +1,3 @@
-import { loadAssets, loadSpriteSheet } from "@kvisaz/phaser-sugar";
 import { scaleToSize } from "../../../common";
 
 type Scene = Phaser.Scene;
@@ -10,12 +9,10 @@ const jsonUrl = "./assets/atlases/atlas-minesweeper.json";
 const textureName = "minesweeper";
 
 export const MineSweeperAssetImages = {
-  async load(scene: Phaser.Scene): Promise<void> {
-    await loadAssets(scene, scene => {
-      scene.load.atlas(textureName, pngUrl, jsonUrl);
-    }, progress => {
-      console.log("progress", progress);
-    });
+
+  /** просто указывает на старт загрузки **/
+  load(scene: Phaser.Scene): void {
+    scene.load.atlas(textureName, pngUrl, jsonUrl);
   },
 
   /** общий принцип - имя файла остается в атласе **/

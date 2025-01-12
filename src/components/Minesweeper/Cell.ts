@@ -1,4 +1,4 @@
-import { MineSweeperAssetImages } from "./assets";
+import { MineSweeperAssets } from "./assets";
 
 interface CellProps {
   scene: Phaser.Scene;
@@ -43,10 +43,10 @@ export class Cell extends Phaser.GameObjects.Container {
     this.col = col;
 
     // Create all image variants
-    this.unrevealedImage = MineSweeperAssetImages.cell(scene).setDisplaySize(size, size);
-    this.revealedImage = MineSweeperAssetImages.revealedCell(scene).setDisplaySize(size, size).setVisible(false);
-    this.flagImage = MineSweeperAssetImages.flag(scene).setDisplaySize(size, size).setVisible(false);
-    this.mineImage = MineSweeperAssetImages.mine(scene).setDisplaySize(size, size).setVisible(false);
+    this.unrevealedImage = MineSweeperAssets.images.cell(scene).setDisplaySize(size, size);
+    this.revealedImage = MineSweeperAssets.images.revealedCell(scene).setDisplaySize(size, size).setVisible(false);
+    this.flagImage = MineSweeperAssets.images.flag(scene).setDisplaySize(size, size).setVisible(false);
+    this.mineImage = MineSweeperAssets.images.mine(scene).setDisplaySize(size, size).setVisible(false);
     this.inputRect = new Phaser.GameObjects.Rectangle(scene, 0, 0, size, size)
       .setDisplaySize(size, size);
 

@@ -1,6 +1,6 @@
 import { Align } from "@kvisaz/phaser-sugar";
 import { IMineSweeperFieldState, UiSmileState } from "./interfaces";
-import { MineSweeperAssetImages, UiSmiley } from "./assets";
+import { MineSweeperAssets, UiSmiley } from "./assets";
 
 interface IMineSweeperUIProps {
   scene: Phaser.Scene;
@@ -40,7 +40,7 @@ export class MineSweeperUI extends Phaser.GameObjects.Container {
     this.add([this.minesLabel, this.minesText]);
 
     // Smiley button
-    this.smileyButton = MineSweeperAssetImages.smiley(scene);
+    this.smileyButton = MineSweeperAssets.images.smiley(scene);
     this.smileyButton.setInteractive();
     this.smileyButton.on("pointerdown", onRestart);
 
