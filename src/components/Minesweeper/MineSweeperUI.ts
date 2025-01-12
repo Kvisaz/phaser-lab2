@@ -1,6 +1,6 @@
 import { Align } from "@kvisaz/phaser-sugar";
 import { IMineSweeperFieldState, UiSmileState } from "./interfaces";
-import { MineSweeperAssetImages, UiSmiley } from "./AssetImages";
+import { MineSweeperAssetImages, UiSmiley } from "./assets";
 
 interface IMineSweeperUIProps {
   scene: Phaser.Scene;

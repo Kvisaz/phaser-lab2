@@ -1,5 +1,5 @@
 import { loadAssets, loadSpriteSheet } from "@kvisaz/phaser-sugar";
-import { scaleToSize } from "../../common";
+import { scaleToSize } from "../../../common";
 
 type Scene = Phaser.Scene;
 type GameImage = Phaser.GameObjects.Image;

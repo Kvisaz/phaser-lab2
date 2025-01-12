@@ -1,6 +1,6 @@
 import { IStory } from "../../../storybook/interfaces";
 import { Minesweeper } from "./Minesweeper";
-import { MineSweeperAssetImages } from "./AssetImages";
+import { MineSweeperAssetImages } from "./assets";
 
 export const minesweeperStory: IStory = {
   title: "Minesweeper",

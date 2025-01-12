@@ -1,4 +1,4 @@
-import { MineSweeperAssetImages } from "./AssetImages";
+import { MineSweeperAssetImages } from "./assets";
 
 interface CellProps {
   scene: Phaser.Scene;
