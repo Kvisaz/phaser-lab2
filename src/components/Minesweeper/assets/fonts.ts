@@ -1,4 +1,4 @@
-import { loadFont } from "./loadFont";
+import { loadFont } from "@kvisaz/phaser-sugar";
 
 const urlBase = "./assets/fonts";
 
